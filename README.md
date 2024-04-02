@@ -2,4 +2,4 @@
 
 ⚠️ Under Construction ⚠️ 
 
-This is the source code for [my blog](https://blog.stevanfreeborn.com).
+The source code for [my blog](https://blog.stevanfreeborn.com).
