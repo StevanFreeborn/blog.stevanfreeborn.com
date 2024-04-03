@@ -1,0 +1,19 @@
+version: '3.8'
+name: blog-development
+services:
+  blog:
+    container_name: blog.stevanfreeborn.com-development
+    build:
+      target: development-stage
+      context: ./src/Blog/
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/Blog:/app
+      - '~/.aspnet/https:/root/.aspnet/https'
+    ports:
+      - '4500:4500'
+      - '4501:4501'
+      - '1234:5555'
+    restart: unless-stopped
+    env_file:
+      - ./src/Blog/.env.development

@@ -1,0 +1,15 @@
+!.env.vault
+**/.dockerignore
+**/.env
+**/.project
+**/.settings
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/logs
+**/bin
+**/Dockerfile*
+**/obj
+.env*
+.flaskenv*
+!.env.project

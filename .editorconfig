@@ -4,6 +4,15 @@ root = true
 [*]
 indent_style = space
 
+# Razor files
+[*.razor]
+indent_size = 2
+indent_style = space
+
+[*.css]
+indent_size = 2
+indent_style = space
+
 # Xml files
 [*.xml]
 indent_size = 2
@@ -14,8 +23,8 @@ indent_size = 2
 #### Core EditorConfig Options ####
 
 # Indentation and spacing
-indent_size = 4
-tab_width = 4
+indent_size = 2
+tab_width = 2
 
 # New line preferences
 end_of_line = crlf
