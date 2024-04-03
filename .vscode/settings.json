@@ -3,5 +3,6 @@
     "Antiforgery",
     "blazor",
     "Hsts"
-  ]
+  ],
+  "dotnet.unitTests.runSettingsPath": "./test/Blog.Tests/.runsettings"
 }
