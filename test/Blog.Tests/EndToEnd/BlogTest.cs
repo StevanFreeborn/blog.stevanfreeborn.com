@@ -1,19 +1,17 @@
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
+
 namespace Blog.Tests.EndToEnd;
 
-public class BlogPageTest : PageTest
+[TestFixture]
+public class BlogTest : PageTest
 {
   private readonly BlogHostFactory<Program> _factory = new();
 
   public override BrowserNewContextOptions ContextOptions()
   {
-    var baseUrl = "http://localhost:5000";
-
-    _factory
-      .WithWebHostBuilder(builder => builder.UseUrls(baseUrl))
-      .CreateDefaultClient();
-
     var options = base.ContextOptions();
-    options.BaseURL = baseUrl;
+    options.BaseURL = _factory.ServerAddress;
     return options;
   }
 }
