@@ -50,9 +50,9 @@ public class BlogHostFactory<TProgram> : WebApplicationFactory<TProgram> where T
     _host.Start();  
 
     var server = _host.Services.GetRequiredService<IServer>();  
-    var addresses = server.Features.Get<IServerAddressesFeature>();  
+    var addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>();  
 
-    ClientOptions.BaseAddress = addresses!.Addresses  
+    ClientOptions.BaseAddress = addresses.Addresses  
       .Select(x => new Uri(x))  
       .Last();
 
