@@ -29,6 +29,9 @@ jobs:
         run: dotnet restore
       - name: Build project
         run: dotnet build --no-restore
+      - name: Install playwright dependencies
+        shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install
       - name: Test project
         run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal
       - name: Upload test results

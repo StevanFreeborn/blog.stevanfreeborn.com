@@ -24,3 +24,5 @@ app
   .AddInteractiveServerRenderMode();
 
 app.Run();
+
+public partial class Program {}

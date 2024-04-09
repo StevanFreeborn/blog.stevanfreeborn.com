@@ -5,6 +5,7 @@
 
 # appsettings
 appsettings*.json
+!appsettings.example.json
 
 # dotenv files
 .env*
