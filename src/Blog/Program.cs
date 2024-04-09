@@ -1,6 +1,8 @@
-using Blog.Components;
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
+builder.Services.AddScoped<IPostService, FilePostService>();
 
 builder.Services
   .AddRazorComponents()

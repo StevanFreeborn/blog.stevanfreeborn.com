@@ -1,0 +1,28 @@
+@namespace Blog.Components
+@inject IPostService postService
+@inject IJSRuntime JS
+
+<h1>Posts</h1>
+
+@foreach (var post in posts)
+{
+  <h2>@post.Title</h2>
+  <p>@post.Content</p>
+}
+
+@code {
+  private List<Post> posts = [];
+
+  protected override async Task OnInitializedAsync()
+  {
+    posts = await postService.GetPostsAsync();
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      await JS.InvokeVoidAsync("console.log", posts);
+    }
+  }
+}
