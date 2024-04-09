@@ -6,14 +6,20 @@
   public void Header_WhenRendered_ItShouldContainSiteTitle()
   {
     var cut = Render(@<Header />);
-    cut.MarkupMatches(@<h1>journal</h1>);
+
+    var heading = cut.Find("h1");
+
+    heading.MarkupMatches(@<h1>journal</h1>);
   }
 
   [Test]
   public void Header_WhenRendered_ItShouldContainAuthorInfo()
   {
     var cut = Render(@<Header />);
-    cut.MarkupMatches(@<span>by</span>);
+
+    var author = cut.Find(".author-container > span");
+
+    author.MarkupMatches(@<span>by</span>);
   }
 
   [Test]
