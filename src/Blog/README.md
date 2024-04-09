@@ -41,15 +41,8 @@ docker-compose -f docker-compose.dev.yml up --build
 cp src/Blog/appsettings.example.json src/Blog/appsettings.Development.json
 ```
 
-#### Install dependencies
-
-```sh
-cd src/Blog
-dotnet restore
-```
-
 #### Run the application
 
 ```sh
-dotnet run
+dotnet run --project src/Blog/Blog.csproj
 ```
