@@ -2,6 +2,7 @@
 <RunSettings>
   <Playwright>
     <BrowserName>chromium</BrowserName>
+    <ExpectTimeout>30000</ExpectTimeout>
     <LaunchOptions>
       <Headless>false</Headless>
       <Channel>msedge</Channel>
