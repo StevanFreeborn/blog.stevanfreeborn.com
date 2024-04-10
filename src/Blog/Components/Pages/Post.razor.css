@@ -1,0 +1,16 @@
+article {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  & .heading-container {
+    & h2 {
+      font-size: 2.5rem;
+      font-weight: 900;
+    }
+
+    & p {
+      font-size: 0.85rem;
+    }
+  }
+}

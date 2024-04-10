@@ -1,0 +1,41 @@
+@page "/{slug:nonfile}"
+@inject IPostService PostService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@BlogPost.Title - journal</PageTitle>
+
+<HeadContent>
+  <meta name="description" content="@BlogPost.Lead">
+  <link rel="stylesheet" href="markdown.css">
+  <link rel="stylesheet" href="prism.css">
+  <script defer src="prism.js"></script>
+</HeadContent>
+
+<article>
+  <div class="heading-container">
+    <h2>@BlogPost.Title</h2>
+    <p>@BlogPost.PublishedAt.ToString("MMMM d, yyyy")</p>
+  </div>
+  <div class="markdown-body">
+    @((MarkupString)BlogPost.Content)
+  </div>
+</article>
+
+@code {
+  [Parameter] 
+  public string Slug { get; set; } = string.Empty;
+  PostWithContent BlogPost { get; set; } = new PostWithContent();
+
+  protected override async Task OnInitializedAsync()
+  {
+    var post = await PostService.GetPostAsync(Slug);
+
+    if (post is null)
+    {
+      NavigationManager.NavigateTo("/Error/404");
+      return;
+    }
+
+    BlogPost = post;
+  }
+}

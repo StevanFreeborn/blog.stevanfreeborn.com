@@ -105,4 +105,46 @@ class FilePostService(
 
     return [.. posts.OrderByDescending(x => x.PublishedAt)];
   }
+
+  public async Task<PostWithContent?> GetPostAsync(string slug)
+  {
+    try 
+    {
+      var postPath = _fileSystem.Path.Combine(_options.PostsDirectory, slug, IndexFile);
+
+      if (_fileSystem.File.Exists(postPath) is false)
+      {
+        return null;
+      }
+
+      var postText = await _fileSystem.File.ReadAllTextAsync(postPath);
+
+      var (metaContent, document) = ParsePost(postText);
+
+      if (metaContent is null || document.Count is 0)
+      {
+        return null;
+      }
+
+      var post = JsonSerializer.Deserialize<PostWithContent>(metaContent, JsonSerializerOptions);
+
+      if (post is null || post.IsPublished is false)
+      {
+        return null;
+      }
+
+      var postWithContent = post with 
+      { 
+        Slug = slug,
+        Content = document.ToHtml(MarkdownPipeline) 
+      };
+
+      return postWithContent;
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Error while getting post {Slug}", slug);
+      return null;
+    }
+  }
 }
