@@ -31,11 +31,10 @@ jobs:
         run: dotnet build --no-restore
       - name: Install playwright dependencies
         shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install-deps
+      - name: Install playwright
+        shell: pwsh
         run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install
-      - name: Check debug folder
-        run: ls ./test/Blog.Tests/bin/Debug/net8.0/
-      - name: Check for test posts
-        run: ls ./test/Blog.Tests/bin/Debug/net8.0/TestPosts
       - name: Test project
         run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal
       - name: Upload test results
