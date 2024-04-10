@@ -2,7 +2,8 @@ namespace Blog.Posts;
 
 class FilePostService(
   IOptions<FilePostServiceOptions> options,
-  IFileSystem fileSystem
+  IFileSystem fileSystem,
+  ILogger<FilePostService> logger
 ) : IPostService
 {
   private static readonly JsonSerializerOptions JsonSerializerOptions = new()
@@ -21,6 +22,7 @@ class FilePostService(
 
   private readonly FilePostServiceOptions _options = options.Value;
   private readonly IFileSystem _fileSystem = fileSystem;
+  private readonly ILogger<FilePostService> _logger = logger;
 
   private static (string? metadata, MarkdownDocument document) ParsePost(string postText)
   {
@@ -97,7 +99,7 @@ class FilePostService(
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.Message);
+        _logger.LogError(ex, "Error while processing post in {SubDirectory}", subDirectory);
       }
     }
 

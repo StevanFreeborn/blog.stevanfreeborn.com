@@ -13,6 +13,7 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Options;
 global using Microsoft.Playwright;
 global using Microsoft.Playwright.NUnit;
+global using Microsoft.Extensions.Logging;
 
 global using Moq;
 

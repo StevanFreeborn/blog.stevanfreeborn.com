@@ -5,6 +5,7 @@ class FilePostServiceTests
 {
   private readonly Mock<IFileSystem> _mockFileSystem = new();
   private readonly Mock<IOptions<FilePostServiceOptions>> _mockOptions = new();
+  private readonly Mock<ILogger<FilePostService>> _mockLogger = new();
   private readonly FilePostService _sut;
 
   public FilePostServiceTests()
@@ -13,7 +14,11 @@ class FilePostServiceTests
       .Setup(x => x.Value)
       .Returns(new FilePostServiceOptions { PostsDirectory = "posts" });
 
-    _sut = new FilePostService(_mockOptions.Object, _mockFileSystem.Object);
+    _sut = new FilePostService(
+      _mockOptions.Object, 
+      _mockFileSystem.Object,
+      _mockLogger.Object
+    );
   }
 
   [Test]
