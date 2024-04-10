@@ -1,6 +1,10 @@
+using Blog.Posts;
+
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Blog.Tests.EndToEnd;
 
@@ -31,13 +35,18 @@ public class BlogHostFactory<TProgram> : WebApplicationFactory<TProgram> where T
   }
 
   protected override IHost CreateHost(IHostBuilder builder)
-  {    
+  {
     var testHost = builder
-      .ConfigureWebHost(
-        webHostBuilder => webHostBuilder.ConfigureLogging(
-          config => config.ClearProviders()
-        )
-      )
+      .ConfigureWebHost(webHostBuilder =>
+      {
+        webHostBuilder.ConfigureLogging(config => config.ClearProviders());
+        webHostBuilder.ConfigureTestServices(services =>
+        {
+          var postsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "TestPosts");
+          var postServiceOptions = new FilePostServiceOptions() { PostsDirectory = postsDirectory };
+          services.AddSingleton(Options.Create(postServiceOptions));
+        });
+      })
       .Build();
 
     builder.ConfigureWebHost(
@@ -46,17 +55,17 @@ public class BlogHostFactory<TProgram> : WebApplicationFactory<TProgram> where T
       )
     );
 
-    _host = builder.Build();  
-    _host.Start();  
+    _host = builder.Build();
+    _host.Start();
 
-    var server = _host.Services.GetRequiredService<IServer>();  
-    var addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>();  
+    var server = _host.Services.GetRequiredService<IServer>();
+    var addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>();
 
-    ClientOptions.BaseAddress = addresses.Addresses  
-      .Select(x => new Uri(x))  
+    ClientOptions.BaseAddress = addresses.Addresses
+      .Select(x => new Uri(x))
       .Last();
 
-    testHost.Start();  
-    return testHost;  
+    testHost.Start();
+    return testHost;
   }
 }

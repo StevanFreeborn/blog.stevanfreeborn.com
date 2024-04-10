@@ -2,7 +2,9 @@
   "cSpell.words": [
     "Antiforgery",
     "blazor",
-    "Hsts"
+    "Hsts",
+    "Markdig",
+    "msedge"
   ],
   "dotnet.unitTests.runSettingsPath": "./test/Blog.Tests/.runsettings"
 }

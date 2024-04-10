@@ -15,7 +15,7 @@ public class HomeTests : BlogTest
   public async Task Home_WhenNavigatedTo_ItShouldCorrectSiteTitle()
   {
     await Page.GotoAsync("/");
-    var message = Page.GetByRole(AriaRole.Heading, new () { Name = "journal" });
+    var message = Page.GetByRole(AriaRole.Heading, new() { Name = "journal" });
     await Expect(message).ToBeVisibleAsync();
   }
 
@@ -28,5 +28,21 @@ public class HomeTests : BlogTest
 
     await Expect(message).ToBeVisibleAsync();
     await Expect(image).ToBeVisibleAsync();
+  }
+
+  [Test]
+  public async Task Home_WhenNavigatedTo_ItShouldDisplayPostFeed()
+  {
+    await Page.GotoAsync("/");
+    var feed = Page.GetByRole(AriaRole.Feed);
+    await Expect(feed).ToBeVisibleAsync();
+  }
+
+  [Test]
+  public async Task Home_WhenNavigatedTo_ItShouldDisplayPosts()
+  {
+    await Page.GotoAsync("/");
+    var posts = Page.GetByRole(AriaRole.Article);
+    await Expect(posts).ToHaveCountAsync(2);
   }
 }
