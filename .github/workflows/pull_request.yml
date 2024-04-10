@@ -36,7 +36,7 @@ jobs:
         shell: pwsh
         run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install
       - name: Test project
-        run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal
+        run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal -s ./test/Blog.Tests/ci.runsettings
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
