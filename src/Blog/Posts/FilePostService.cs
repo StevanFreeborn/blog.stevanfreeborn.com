@@ -18,7 +18,7 @@ class FilePostService(
     .Build();
   
   private const string MetaFence = "meta";
-  private const string IndexFile = "INDEX.md";
+  private const string IndexFile = "index.md";
 
   private readonly FilePostServiceOptions _options = options.Value;
   private readonly IFileSystem _fileSystem = fileSystem;
