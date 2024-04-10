@@ -25,6 +25,8 @@ app
   .MapRazorComponents<App>()
   .AddInteractiveServerRenderMode();
 
+app.UseStatusCodePagesWithRedirects("/Error/{0}");
+
 app.Run();
 
-public partial class Program {}
+public partial class Program { }
