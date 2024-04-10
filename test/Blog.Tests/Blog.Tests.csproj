@@ -46,4 +46,11 @@
     <ProjectReference Include="..\..\src\Blog\Blog.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include=".\EndToEnd\TestPosts\**">
+      <Link>TestPosts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

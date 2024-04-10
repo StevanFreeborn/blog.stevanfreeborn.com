@@ -2,13 +2,27 @@
 @inject IPostService postService
 @inject IJSRuntime JS
 
-<h1>Posts</h1>
-
-@foreach (var post in posts)
-{
-  <h2>@post.Title</h2>
-  <p>@post.Content</p>
-}
+  @if (posts.Count == 0)
+  {
+    <div class="container">
+      <p>Looks like writers block. Check back later.</p>
+    </div>
+  }
+  else
+  {
+    <section role="feed" class="container">
+      @foreach (var post in posts)
+      {
+        <a href="/@post.Slug">
+          <article>
+            <h3 title="@post.Title" >@post.Title</h3>
+            <p class="date">@post.PublishedAt.ToString("MMMM d, yyyy")</p>
+            <p class="lead">@post.Lead</p>
+          </article>
+        </a>
+      }
+    </section>
+  }
 
 @code {
   private List<Post> posts = [];
@@ -16,13 +30,5 @@
   protected override async Task OnInitializedAsync()
   {
     posts = await postService.GetPostsAsync();
-  }
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
-    {
-      await JS.InvokeVoidAsync("console.log", posts);
-    }
   }
 }
