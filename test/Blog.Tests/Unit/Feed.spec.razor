@@ -10,9 +10,11 @@
       .Setup(x => x.GetPostsAsync())
       .ReturnsAsync(new List<Post>());
 
-    Services.AddSingleton(_postServiceMock.Object);
+    var ctx = new TestContext();
 
-    var cut = Render(@<Feed />);
+    ctx.Services.AddSingleton(_postServiceMock.Object);
+
+    var cut = ctx.Render(@<Feed />);
 
     cut.Find("p").MarkupMatches("<p>Looks like writers block. Check back later.</p>");
   }
@@ -29,9 +31,11 @@
       .Setup(x => x.GetPostsAsync())
       .ReturnsAsync(posts);
 
-    Services.AddSingleton(_postServiceMock.Object);
+    var ctx = new TestContext();
 
-    var cut = Render(@<Feed />);
+    ctx.Services.AddScoped(_ => _postServiceMock.Object);
+
+    var cut = ctx.Render(@<Feed />);
 
     var articles = cut.FindAll("article");
 
