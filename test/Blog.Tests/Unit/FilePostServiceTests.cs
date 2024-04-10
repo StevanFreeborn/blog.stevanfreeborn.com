@@ -420,4 +420,16 @@ class FilePostServiceTests
       }
     ]);
   }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndSlugDoesNotExist_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(false);
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
 }

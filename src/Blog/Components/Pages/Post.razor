@@ -1,6 +1,9 @@
 @page "/{slug:nonfile}"
+@implements IAsyncDisposable
 @inject IPostService PostService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ILogger<Post> Logger
 
 <PageTitle>@BlogPost.Title - journal</PageTitle>
 
@@ -8,7 +11,9 @@
   <meta name="description" content="@BlogPost.Lead">
   <link rel="stylesheet" href="markdown.css">
   <link rel="stylesheet" href="prism.css">
-  <script defer src="prism.js"></script>
+  <script src="prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
 </HeadContent>
 
 <article>
@@ -25,6 +30,7 @@
   [Parameter] 
   public string Slug { get; set; } = string.Empty;
   PostWithContent BlogPost { get; set; } = new PostWithContent();
+  IJSObjectReference? module;
 
   protected override async Task OnInitializedAsync()
   {
@@ -37,5 +43,33 @@
     }
 
     BlogPost = post;
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Post.razor.js");
+      await module.InvokeVoidAsync("addAnchors");
+      await module.InvokeVoidAsync("addClipboard");
+    }
+  }
+
+  async ValueTask IAsyncDisposable.DisposeAsync()
+  {
+    try
+    {
+      if (module is not null)
+      {
+        await module.DisposeAsync();
+      }
+    }
+    catch (Exception ex) when (ex is JSDisconnectedException)
+    {
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, "Error disposing of the module");
+    }
   }
 }

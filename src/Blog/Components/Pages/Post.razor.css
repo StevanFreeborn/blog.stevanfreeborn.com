@@ -13,4 +13,30 @@ article {
       font-size: 0.85rem;
     }
   }
+
+  .markdown-body {
+    & pre {
+      position: relative;
+
+      & .copy-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        color: var(--primary-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        transition-property: color;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
+
+        & svg {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+  }
 }
