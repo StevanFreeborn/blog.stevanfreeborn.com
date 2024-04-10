@@ -1,4 +1,99 @@
-h1:focus {
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+
+/* Resets */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style-type: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Site */
+
+:root {
+  --primary-white: #ffffff;
+  --secondary-white: #f8f8f8;
+  --primary-black: #121212;
+  --secondary-black: #1e1e1e;
+}
+
+:root {
+  --color-background: var(--primary-white);
+  --color-background-soft: var(--secondary-white);
+  --color-text: var(--primary-black);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--primary-black);
+    --color-background-soft: var(--secondary-black);
+    --color-text: var(--primary-white);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Merriweather', serif;
+  font-size: 16px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+h2:focus {
   outline: none;
 }
 

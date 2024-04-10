@@ -1,0 +1,50 @@
+name: Pull Request
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - '.vscode/**'
+      - '.gitignore'
+      - '.editorconfig'
+      - 'LICENSE.md'
+      - 'docker-compose.dev.yml'
+      - '**/*/README.md'
+      - '**/*/Dockerfile'
+jobs:
+  run_tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Install report generator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build project
+        run: dotnet build --no-restore
+      - name: Install playwright dependencies
+        shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install-deps
+      - name: Install playwright
+        shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install
+      - name: Test project
+        run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal -s ./test/Blog.Tests/ci.runsettings
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./test/Blog.Tests/TestResults
+      - name: Upload playwright traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: ./test/Blog.Tests/bin/Debug/net8.0/playwright-traces

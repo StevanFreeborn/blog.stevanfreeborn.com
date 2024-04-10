@@ -1,6 +1,8 @@
-using Blog.Components;
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
+builder.Services.AddScoped<IPostService, FilePostService>();
 
 builder.Services
   .AddRazorComponents()
@@ -23,6 +25,8 @@ app
   .MapRazorComponents<App>()
   .AddInteractiveServerRenderMode();
 
+app.UseStatusCodePagesWithRedirects("/Error/{0}");
+
 app.Run();
 
-public partial class Program {}
+public partial class Program { }

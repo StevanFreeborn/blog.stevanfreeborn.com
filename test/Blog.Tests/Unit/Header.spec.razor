@@ -1,0 +1,32 @@
+@inherits Bunit.TestContext
+
+@code
+{
+  [Test]
+  public void Header_WhenRendered_ItShouldContainSiteTitle()
+  {
+    var cut = Render(@<Header />);
+
+    var heading = cut.Find("h1");
+
+    heading.MarkupMatches(@<h1>journal</h1>);
+  }
+
+  [Test]
+  public void Header_WhenRendered_ItShouldContainAuthorInfo()
+  {
+    var cut = Render(@<Header />);
+
+    var author = cut.Find(".author-container > span");
+
+    author.MarkupMatches(@<span>by</span>);
+  }
+
+  [Test]
+  public void Header_WhenRendered_ItShouldContainAuthorImage()
+  {
+    var cut = Render(@<Header />);
+    var image = cut.Find("img[alt='Stevan Freeborn']");
+    image.Should().NotBeNull();
+  }
+}

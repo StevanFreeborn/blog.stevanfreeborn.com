@@ -1,0 +1,34 @@
+@namespace Blog.Components
+@inject IPostService postService
+@inject IJSRuntime JS
+
+  @if (posts.Count == 0)
+  {
+    <div class="container">
+      <p>Looks like writers block. Check back later.</p>
+    </div>
+  }
+  else
+  {
+    <section role="feed" class="container">
+      @foreach (var post in posts)
+      {
+        <a href="/@post.Slug">
+          <article>
+            <h3 title="@post.Title" >@post.Title</h3>
+            <p class="date">@post.PublishedAt.ToString("MMMM d, yyyy")</p>
+            <p class="lead">@post.Lead</p>
+          </article>
+        </a>
+      }
+    </section>
+  }
+
+@code {
+  private List<Post> posts = [];
+
+  protected override async Task OnInitializedAsync()
+  {
+    posts = await postService.GetPostsAsync();
+  }
+}
