@@ -3,7 +3,8 @@
     "Antiforgery",
     "blazor",
     "Hsts",
-    "Markdig"
+    "Markdig",
+    "msedge"
   ],
   "dotnet.unitTests.runSettingsPath": "./test/Blog.Tests/.runsettings"
 }

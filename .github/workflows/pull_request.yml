@@ -42,3 +42,8 @@ jobs:
         with:
           name: test-results
           path: ./test/Blog.Tests/TestResults
+      - name: Upload playwright trace
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: ./test/Blog.Tests/bin/Debug/net8.0/playwright-traces
