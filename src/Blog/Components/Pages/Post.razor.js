@@ -1,3 +1,8 @@
+
+/**
+ * @summary Adds anchors to each heading in the post
+ * so that users can link directly to them. 
+*/ 
 export function addAnchors() {
   const selectors = [
     '.markdown-body h2',
@@ -7,9 +12,15 @@ export function addAnchors() {
     '.markdown-body h6'
   ];
 
+  // relies on AnchorJS library
+  // being loaded in Post.razor
   anchors.add(selectors.join(','));
 }
 
+/**
+ * @summary Adds a button to each code block that
+ * allows users to copy the code to their clipboard.
+ */
 export function addClipboard() {
   const codeBlocks = document.querySelectorAll('pre');
   
@@ -37,6 +48,8 @@ export function addClipboard() {
     block.appendChild(button);
   });
 
+  // relies on ClipboardJS library
+  // being loaded in Post.razor
   var clipboard = new ClipboardJS('.copy-button', {
     target: (trigger) => {
       return trigger.previousElementSibling;
