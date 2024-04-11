@@ -1,5 +1,3 @@
-# Test Blog
-
 ```json meta
 {
   "title": "Another Test Blog",
