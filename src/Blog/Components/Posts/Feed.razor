@@ -2,7 +2,12 @@
 @inject IPostService postService
 @inject IJSRuntime JS
 
-  @if (posts.Count == 0)
+
+  @if (Posts is null)
+  {
+    return;
+  }
+  else if (Posts.Count == 0)
   {
     <div class="container">
       <p>Looks like writers block. Check back later.</p>
@@ -11,7 +16,7 @@
   else
   {
     <section role="feed" class="container">
-      @foreach (var post in posts)
+      @foreach (var post in Posts)
       {
         <a href="/@post.Slug">
           <article>
@@ -25,10 +30,10 @@
   }
 
 @code {
-  private List<Post> posts = [];
+  private List<Post>? Posts;
 
   protected override async Task OnInitializedAsync()
   {
-    posts = await postService.GetPostsAsync();
+    Posts = await postService.GetPostsAsync();
   }
 }
