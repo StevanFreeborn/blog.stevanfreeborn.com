@@ -1,0 +1,13 @@
+version: '3.8'
+name: blog-production
+services:
+  blog:
+    build:
+      target: production-stage
+      context: ./src/Blog/
+      dockerfile: Dockerfile
+    ports:
+      - 8080
+    restart: always
+    environment:
+      - FilePostServiceOptions__PostsDirectory=wwwroot/posts
