@@ -32,6 +32,14 @@ public class PostTests : BlogTest
   }
 
   [Test]
+  public async Task Post_WhenNavigatedTo_ItShouldDisplayContent()
+  {
+    await Page.GotoAsync($"/{TestPostSlug}");
+    var content = Page.GetByRole(AriaRole.Article);
+    await Expect(content).ToBeVisibleAsync();
+  }
+
+  [Test]
   public async Task Post_WhenNavigatedToAndPostDoesNotExist_ItShouldDisplay404()
   {
     await Page.GotoAsync("/non-existent-post");
