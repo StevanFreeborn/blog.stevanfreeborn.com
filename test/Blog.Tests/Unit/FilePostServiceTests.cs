@@ -420,4 +420,197 @@ class FilePostServiceTests
       }
     ]);
   }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndSlugDoesNotExist_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(false);
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndPostExistsButContainsNoMetaData_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns("slug/INDEX.md");
+
+    _mockFileSystem
+      .Setup(x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync("# Post Title");
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndPostContainsNoContent_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns("slug/INDEX.md");
+
+    _mockFileSystem
+      .Setup(x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync(
+        """
+        ```json meta
+        {
+          "title": "Post Title",
+          "date": "2021-01-01"
+        }
+        ```
+        """
+      );
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndPostExistsButContainsInvalidMetaData_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns("slug/INDEX.md");
+
+    _mockFileSystem
+      .Setup(x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync(
+        """
+        # Post Title
+
+        ```json meta
+        {
+          "title": "Post Title",
+          "isPublished": "true",
+          "date": "2021-01-01"
+        }
+        ```
+        """
+      );
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndPostExistsButIsNotPublished_ItShouldReturnNull()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns("slug/INDEX.md");
+
+    _mockFileSystem
+      .Setup(x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync(
+        """
+        # Post Title
+
+        ```json meta
+        {
+          "title": "Post Title",
+          "lead": "Post lead",
+          "isPublished": false,
+          "publishedAt": "2021-01-01"
+        }
+        ```
+
+        Post content
+        """
+      );
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().BeNull();
+  }
+
+  [Test]
+  public async Task GetPostAsync_WhenCalledAndPostExists_ItShouldReturnPostWithContent()
+  {
+    _mockFileSystem
+      .Setup(x => x.Directory.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns("slug/INDEX.md");
+
+    _mockFileSystem
+      .Setup(x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _mockFileSystem
+      .Setup(x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync(
+        """
+        # Post Title
+
+        ```json meta
+        {
+          "title": "Post Title",
+          "lead": "Post lead",
+          "isPublished": true,
+          "publishedAt": "2021-01-01",
+          "slug": "slug"
+        }
+        ```
+
+        Post content
+        """
+      );
+
+    var result = await _sut.GetPostAsync("slug");
+
+    result.Should().NotBeNull();
+    result.Should().BeEquivalentTo(new PostWithContent
+    {
+      Title = "Post Title",
+      Lead = "Post lead",
+      IsPublished = true,
+      PublishedAt = new DateTime(2021, 1, 1),
+      Slug = "slug",
+      Content = "<h1 id=\"post-title\">Post Title</h1>\n<p>Post content</p>\n",
+    });
+  }
 }

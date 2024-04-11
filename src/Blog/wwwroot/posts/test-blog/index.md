@@ -3,13 +3,15 @@
   "title": "Test Blog",
   "lead": "This is a test blog post.",
   "isPublished": true,
-  "publishedAt": "2021-01-01"
+  "publishedAt": "2024-04-10"
 }
 ```
 
 Welcome to my Markdown blog post! In this post, I'll cover various Markdown elements to help you test styling.
 
 ## Text Formatting
+
+This is a ""citation of someone""
 
 Here are some examples of text formatting:
 
@@ -42,7 +44,7 @@ Here are some examples of text formatting:
 
 ### Image
 
-![Markdown Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Markdown-mark.svg/1920px-Markdown-mark.svg.png)
+![Cute Dog](https://placedog.net/672?random)
 
 ## Blockquotes
 

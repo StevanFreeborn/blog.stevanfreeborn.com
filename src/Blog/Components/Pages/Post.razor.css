@@ -1,0 +1,42 @@
+article {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  & .heading-container {
+    & h2 {
+      font-size: 2.5rem;
+      font-weight: 900;
+    }
+
+    & p {
+      font-size: 0.85rem;
+    }
+  }
+
+  .markdown-body {
+    & pre {
+      position: relative;
+
+      & .copy-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        color: var(--primary-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        transition-property: color;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
+
+        & svg {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+  }
+}

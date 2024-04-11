@@ -6,5 +6,9 @@
     "Markdig",
     "msedge"
   ],
-  "dotnet.unitTests.runSettingsPath": "./test/Blog.Tests/.runsettings"
+  "dotnet.unitTests.runSettingsPath": "./test/Blog.Tests/.runsettings",
+  "markdownlint.config": {
+    "default": true,
+    "MD041": false,
+  }
 }
