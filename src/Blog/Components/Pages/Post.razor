@@ -5,32 +5,39 @@
 @inject IJSRuntime JSRuntime
 @inject ILogger<Post> Logger
 
-<PageTitle>@BlogPost.Title - journal</PageTitle>
+@if (BlogPost is null)
+{
+  return;
+}
+else
+{
+  <PageTitle>@BlogPost.Title - journal</PageTitle>
 
-<HeadContent>
-  <meta name="description" content="@BlogPost.Lead">
-  <link rel="stylesheet" href="markdown.css">
-  <link rel="stylesheet" href="prism.css">
-  <script src="prism.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
-</HeadContent>
+  <HeadContent>
+    <meta name="description" content="@BlogPost.Lead">
+    <link rel="stylesheet" href="markdown.css">
+    <link rel="stylesheet" href="prism.css">
+    <script src="prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+  </HeadContent>
 
-<article>
-  <div class="heading-container">
-    <h2>@BlogPost.Title</h2>
-    <p>@BlogPost.PublishedAt.ToString("MMMM d, yyyy")</p>
-  </div>
-  <div class="markdown-body">
-    @((MarkupString)BlogPost.Content)
-  </div>
-</article>
+  <article>
+    <div class="heading-container">
+      <h2>@BlogPost.Title</h2>
+      <p>@BlogPost.PublishedAt.ToString("MMMM d, yyyy")</p>
+    </div>
+    <div class="markdown-body">
+      @((MarkupString)BlogPost.Content)
+    </div>
+  </article>
+}
 
 @code {
   [Parameter] 
   public string Slug { get; set; } = string.Empty;
-  PostWithContent BlogPost { get; set; } = new PostWithContent();
-  IJSObjectReference? module;
+  private PostWithContent? BlogPost;
+  private IJSObjectReference? module;
 
   protected override async Task OnInitializedAsync()
   {
