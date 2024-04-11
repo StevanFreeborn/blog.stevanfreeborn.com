@@ -1,5 +1,13 @@
 export function addAnchors() {
-  anchors.add();
+  const selectors = [
+    '.markdown-body h2',
+    '.markdown-body h3',
+    '.markdown-body h4',
+    '.markdown-body h5',
+    '.markdown-body h6'
+  ];
+
+  anchors.add(selectors.join(','));
 }
 
 export function addClipboard() {
