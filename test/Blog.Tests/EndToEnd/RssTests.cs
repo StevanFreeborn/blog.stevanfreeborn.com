@@ -1,8 +1,3 @@
-using System.ServiceModel.Syndication;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-
 namespace Blog.Tests.EndToEnd;
 
 [TestFixture]
@@ -15,9 +10,9 @@ public class RssTests : BlogTest
     response.Status.Should().Be((int)HttpStatusCode.OK);
 
     var xml = await response.BodyAsync();
-    
+
     var streamReader = new StreamReader(
-      new MemoryStream(xml), 
+      new MemoryStream(xml),
       Encoding.UTF8
     );
 

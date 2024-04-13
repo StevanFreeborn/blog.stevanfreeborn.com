@@ -1,8 +1,3 @@
-using System.ServiceModel.Syndication;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
@@ -29,11 +24,11 @@ app.UseAntiforgery();
 app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
 app
-  .MapGet("/rss", async (HttpContext context, IPostService postService) => 
+  .MapGet("/rss", async (HttpContext context, IPostService postService) =>
   {
     var req = context.Request;
     var url = $"{req.Scheme}://{req.Host}{req.PathBase}";
-    
+
     var posts = await postService.GetPostsAsync();
 
     var items = posts.Select(post =>

@@ -15,7 +15,7 @@ class FilePostServiceTests
       .Returns(new FilePostServiceOptions { PostsDirectory = "posts" });
 
     _sut = new FilePostService(
-      _mockOptions.Object, 
+      _mockOptions.Object,
       _mockFileSystem.Object,
       _mockLogger.Object
     );
@@ -326,8 +326,8 @@ class FilePostServiceTests
     _mockFileSystem
       .Setup(x => x.Directory.GetDirectories(It.IsAny<string>()))
       .Returns([
-        "valid-blog-post", 
-        "another-valid-blog-post", 
+        "valid-blog-post",
+        "another-valid-blog-post",
         "invalid-blog-post"
       ]);
 

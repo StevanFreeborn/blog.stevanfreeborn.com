@@ -32,7 +32,7 @@ public class BlogTest : PageTest
   {
     await Context.Tracing.StopAsync(new()
     {
-        Path = Path.Combine(
+      Path = Path.Combine(
             TestContext.CurrentContext.WorkDirectory,
             "playwright-traces",
             $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.zip"
