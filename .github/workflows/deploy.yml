@@ -14,6 +14,7 @@ on:
       - 'docker-compose.prod.yml'
       - '**/*/README.md'
       - '**/*/Dockerfile'
+      - 'scripts/**'
 jobs:
   # build:
   #   name: Build and push Docker image
@@ -63,4 +64,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            ls blog.stevanfreeborn.com
+            ./blog.stevanfreeborn.com/deploy.ps1
