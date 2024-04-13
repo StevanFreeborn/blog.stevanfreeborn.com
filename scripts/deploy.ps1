@@ -1,4 +1,4 @@
-$NGINX_CONFIG_PATH = "/etc/nginx/sites-available/blog.ddnsgeek.com"
+$NGINX_CONFIG_PATH = "/etc/nginx/sites-available/blog.stevanfreeborn.com"
 
 function StartContainer {
   param (
