@@ -110,6 +110,38 @@ Write-Host "Green container ID: $greenContainerId"
 
 if ($null -eq $greenContainerId) 
 {
+  Write-Host "Green container is not running. Starting green container."
+
+  $greenContainerHostPort = StartContainer -containerColor "green" -dockerTag $dockerTag
+
+  Write-Host "Green container is running."
+  
+  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $greenContainerHostPort
+
+  Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
+
+  nginx -t
+
+  if ($LASTEXITCODE -ne 0) 
+  {
+    Write-Host "Nginx configuration test failed. Reverting changes."
+    Set-Content -Path $filePath -Value $nginxConfig
+    exit 1
+  }
+
+  nginx -s reload
+
+  if ($LASTEXITCODE -ne 0) 
+  {
+    Write-Host "Failed to reload Nginx."
+    exit 1
+  }
+
+  Write-Host "Nginx reloaded. Successfully deployed version $version."
+  exit 0
+}
+else 
+{
   Write-Host "Green container is running. Starting blue container."
 
   $blueContainerHostPort = StartContainer -containerColor "blue" -dockerTag $dockerTag
@@ -171,37 +203,5 @@ if ($null -eq $greenContainerId)
 
   Write-Host "Successfully deployed version $version."
 
-  exit 0
-}
-else 
-{
-  Write-Host "Green container is not running. Starting green container."
-
-  $greenContainerHostPort = StartContainer -containerColor "green" -dockerTag $dockerTag
-
-  Write-Host "Green container is running."
-  
-  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $greenContainerHostPort
-
-  Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
-
-  nginx -t
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Nginx configuration test failed. Reverting changes."
-    Set-Content -Path $filePath -Value $nginxConfig
-    exit 1
-  }
-
-  nginx -s reload
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to reload Nginx."
-    exit 1
-  }
-
-  Write-Host "Nginx reloaded. Successfully deployed version $version."
   exit 0
 }
