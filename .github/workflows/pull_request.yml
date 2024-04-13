@@ -10,6 +10,7 @@ on:
       - '.editorconfig'
       - 'LICENSE.md'
       - 'docker-compose.dev.yml'
+      - 'docker-compose.prod.yml'
       - '**/*/README.md'
       - '**/*/Dockerfile'
 jobs:
