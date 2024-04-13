@@ -66,4 +66,5 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            chmod +x blog.stevanfreeborn.com/deploy.ps1
             ./blog.stevanfreeborn.com/deploy.ps1
