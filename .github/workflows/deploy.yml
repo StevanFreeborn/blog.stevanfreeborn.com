@@ -16,34 +16,34 @@ on:
       - '**/*/Dockerfile'
       - 'scripts/**'
 jobs:
-  # build:
-  #   name: Build and push Docker image
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     version: ${{ steps.version.outputs.version }}
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #     - name: Create version tag
-  #       id: version
-  #       run: echo "version=$(date +%Y.%m.%d.%H%M%S)" >> $GITHUB_OUTPUT
-  #     - name: Build and push server image
-  #       working-directory: src/Blog
-  #       run: |
-  #         TAG=${{ secrets.DOCKERHUB_USERNAME }}/blog.stevanfreeborn.com:${{ steps.version.outputs.version }}
-  #         docker build -t $TAG .
-  #         docker push $TAG
+  build:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create version tag
+        id: version
+        run: echo "version=$(date +%Y.%m.%d.%H%M%S)" >> $GITHUB_OUTPUT
+      - name: Build and push server image
+        working-directory: src/Blog
+        run: |
+          TAG=${{ secrets.DOCKERHUB_USERNAME }}/blog.stevanfreeborn.com:${{ steps.version.outputs.version }}
+          docker build -t $TAG .
+          docker push $TAG
   deploy:
     name: Deploy to server
     runs-on: ubuntu-latest
-    # needs: build
+    needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -67,4 +67,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             chmod +x blog.stevanfreeborn.com/deploy.ps1
-            ./blog.stevanfreeborn.com/deploy.ps1
+            ./blog.stevanfreeborn.com/deploy.ps1 ${{ needs.build.outputs.version }}
