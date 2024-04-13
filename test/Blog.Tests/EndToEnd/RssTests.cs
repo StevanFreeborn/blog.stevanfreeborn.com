@@ -4,7 +4,7 @@ namespace Blog.Tests.EndToEnd;
 public class RssTests : BlogTest
 {
   [Test]
-  public async Task Task_Rss_WhenFetched_ItShouldReturnRssFeed()
+  public async Task Rss_WhenFetched_ItShouldReturnRssFeed()
   {
     var response = await Page.APIRequest.GetAsync("/rss");
     response.Status.Should().Be((int)HttpStatusCode.OK);
@@ -24,7 +24,7 @@ public class RssTests : BlogTest
 
     using var xmlReader = XmlReader.Create(streamReader, settings);
     var feed = SyndicationFeed.Load(xmlReader);
-
+    
     feed.Title.Text.Should().Be("journal");
     feed.Description.Text.Should().Be("A blog by Stevan Freeborn");
     feed.Items.Should().HaveCount(2);
