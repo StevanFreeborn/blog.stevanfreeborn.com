@@ -56,7 +56,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: "scripts/deploy.ps1"
-          target: blog.stevanfreeborn.com/deploy.ps1
+          target: blog.stevanfreeborn.com
+          strip_components: 1
       - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
