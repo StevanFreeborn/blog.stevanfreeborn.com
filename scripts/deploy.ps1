@@ -24,16 +24,26 @@ function StartContainer {
 
   while ($running -eq $false -and $attempts -lt $attemptLimit)
   {
-    $response = Invoke-WebRequest -Uri "http://localhost:$containerHostPort/rss" -UseBasicParsing
-
-    if ($response.StatusCode -eq 200) 
+    try 
     {
-      $running = $true
+      $response = Invoke-WebRequest -Uri "http://localhost:$containerHostPort/rss" -UseBasicParsing
+    
+      if ($response.StatusCode -eq 200) 
+      {
+        $running = $true
+      }
+      else 
+      {
+        Write-Host "Waiting for $containerName container to start..."
+        Start-Sleep -Seconds $waitTimeInSeconds
+        $attempts++
+      }
     }
-    else 
+    catch 
     {
       Write-Host "Waiting for $containerName container to start..."
       Start-Sleep -Seconds $waitTimeInSeconds
+      $attempts++
     }
   }
 
@@ -105,8 +115,6 @@ if ($LASTEXITCODE -ne 0)
 
 # Checkif green container is running
 $greenContainerId = docker ps --filter "name=blog.stevanfreeborn.com.green" --format "{{.ID}}"
-
-Write-Host "Green container ID: $greenContainerId"
 
 if ($null -eq $greenContainerId) 
 {
