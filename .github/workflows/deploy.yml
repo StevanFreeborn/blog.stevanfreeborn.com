@@ -15,27 +15,53 @@ on:
       - '**/*/README.md'
       - '**/*/Dockerfile'
 jobs:
-  build:
-    name: Build and push Docker image
+  # build:
+  #   name: Build and push Docker image
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     version: ${{ steps.version.outputs.version }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Create version tag
+  #       id: version
+  #       run: echo "version=$(date +%Y.%m.%d.%H%M%S)" >> $GITHUB_OUTPUT
+  #     - name: Build and push server image
+  #       working-directory: src/Blog
+  #       run: |
+  #         TAG=${{ secrets.DOCKERHUB_USERNAME }}/blog.stevanfreeborn.com:${{ steps.version.outputs.version }}
+  #         docker build -t $TAG .
+  #         docker push $TAG
+  deploy:
+    name: Deploy to server
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
+    # needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Create version tag
-        id: version
-        run: echo "version=$(date +%Y.%m.%d.%H%M%S)" >> $GITHUB_OUTPUT
-      - name: Build and push server image
-        working-directory: src/Blog
-        run: |
-          TAG=${{ secrets.DOCKERHUB_USERNAME }}/blog.stevanfreeborn.com:${{ steps.version.outputs.version }}
-          docker build -t $TAG .
-          docker push $TAG
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: ".github/scripts/deploy.ps1"
+          target: blog.stevanfreeborn.com
+      - name: Run deploy script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd blog.stevanfreeborn.com
+            ./.github/scripts/deploy.ps1
