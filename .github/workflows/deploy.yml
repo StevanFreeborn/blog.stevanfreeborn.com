@@ -67,4 +67,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             chmod +x blog.stevanfreeborn.com/deploy.ps1
-            ./blog.stevanfreeborn.com/deploy.ps1 ${{ needs.build.outputs.version }}
+            sudo pwsh ./blog.stevanfreeborn.com/deploy.ps1 ${{ needs.build.outputs.version }}

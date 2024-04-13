@@ -1,5 +1,3 @@
-#!/bin/pwsh
-
 $NGINX_CONFIG_PATH = "/etc/nginx/sites-available/blog.ddnsgeek.com"
 
 function StartContainer {
@@ -108,6 +106,8 @@ if ($LASTEXITCODE -ne 0)
 # Checkif green container is running
 $greenContainerId = docker ps --filter "name=blog.stevanfreeborn.com.green" --format "{{.ID}}"
 
+Write-Host "Green container ID: $greenContainerId"
+
 if ($null -eq $greenContainerId) 
 {
   Write-Host "Green container is running. Starting blue container."
@@ -120,7 +120,7 @@ if ($null -eq $greenContainerId)
 
   Write-Host "Nginx configuration updated to point to blue container on port $blueContainerHostPort."
 
-  sudo nginx -t
+  nginx -t
 
   if ($LASTEXITCODE -ne 0) 
   {
@@ -129,7 +129,7 @@ if ($null -eq $greenContainerId)
     exit 1
   }
 
-  sudo nginx -s reload
+  nginx -s reload
 
   if ($LASTEXITCODE -ne 0) 
   {
@@ -185,7 +185,7 @@ else
 
   Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
 
-  sudo nginx -t
+  nginx -t
 
   if ($LASTEXITCODE -ne 0) 
   {
@@ -194,7 +194,7 @@ else
     exit 1
   }
 
-  sudo nginx -s reload
+  nginx -s reload
 
   if ($LASTEXITCODE -ne 0) 
   {
