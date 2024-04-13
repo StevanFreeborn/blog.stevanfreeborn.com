@@ -64,5 +64,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd blog.stevanfreeborn.com
-            chmod +x deploy.ps1
-            ./.github/scripts/deploy.ps1
+            ./deploy.ps1
