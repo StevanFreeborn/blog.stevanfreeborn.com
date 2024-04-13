@@ -16,7 +16,7 @@ class FilePostService(
     .UseAdvancedExtensions()
     .UsePrism()
     .Build();
-  
+
   private const string MetaFence = "meta";
   private const string IndexFile = "index.md";
 
@@ -68,12 +68,12 @@ class FilePostService(
       try
       {
         var indexFilePath = _fileSystem.Path.Combine(subDirectory, IndexFile);
-        
+
         if (_fileSystem.File.Exists(indexFilePath) is false)
         {
           continue;
         }
-        
+
         var postText = await _fileSystem.File.ReadAllTextAsync(indexFilePath);
 
         var (metaContent, document) = ParsePost(postText);
@@ -108,7 +108,7 @@ class FilePostService(
 
   public async Task<PostWithContent?> GetPostAsync(string slug)
   {
-    try 
+    try
     {
       var postPath = _fileSystem.Path.Combine(_options.PostsDirectory, slug, IndexFile);
 
@@ -133,10 +133,10 @@ class FilePostService(
         return null;
       }
 
-      var postWithContent = post with 
-      { 
+      var postWithContent = post with
+      {
         Slug = slug,
-        Content = document.ToHtml(MarkdownPipeline) 
+        Content = document.ToHtml(MarkdownPipeline)
       };
 
       return postWithContent;

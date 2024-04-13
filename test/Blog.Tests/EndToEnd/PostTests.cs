@@ -1,7 +1,7 @@
 namespace Blog.Tests.EndToEnd;
 
 [TestFixture]
-public class PostTests : BlogTest 
+public class PostTests : BlogTest
 {
   private const string TestPostSlug = "test-blog";
   private const string TestPostTitle = "Test Blog";
