@@ -58,6 +58,7 @@ jobs:
           source: "scripts/deploy.ps1"
           target: blog.stevanfreeborn.com
           strip_components: 1
+          rm: true
       - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
