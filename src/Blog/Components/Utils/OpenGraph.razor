@@ -34,7 +34,7 @@
       return;
     }
 
-    BaseUrl = $"{HttpContextAccessor.HttpContext.Request.Scheme}://{HttpContextAccessor.HttpContext.Request.Host}";
+    BaseUrl = HttpContextAccessor.HttpContext.Request.GetBaseUrl();
     OpenGraphUrl = $"{BaseUrl}{HttpContextAccessor.HttpContext.Request.Path}";
   }
 }
