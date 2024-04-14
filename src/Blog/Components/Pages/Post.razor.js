@@ -1,7 +1,3 @@
-export function onLoad() {
-  init();
-}
-
 export function onUpdate() {
   init();
 }
@@ -38,10 +34,6 @@ function addClipboard() {
   const codeBlocks = document.querySelectorAll('pre');
   
   codeBlocks.forEach((block) => {
-    if (block.querySelector('button.copy-button')) {
-      return;
-    }
-
     const button = document.createElement('button');
     button.className = 'copy-button';
     button.type = 'button';
