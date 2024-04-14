@@ -4,43 +4,45 @@
   width: 100%;
   gap: 2rem;
 
-  & a {
-    padding: 1rem;
-    border-radius: 1rem;
-    background-color: var(--color-background-soft);
-    transition-property: transform;
-    transition-duration: 100ms;
-    transition-timing-function: ease-in-out
-  }
-
-  & a:active {
-    transform: scale(0.95)
-  }
-
   & article {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
 
-    & h3 {
-      background: linear-gradient(to right top, #db3e3e, #df3741, #e32e44, #e72347, #eb124b);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 2rem;
-      font-weight: 900;
-    }
-    
-    & .date {
-      font-size: 0.85rem;
+    & a {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 1rem;
+      border-radius: 1rem;
+      background-color: var(--color-background-soft);
+      transition-property: transform;
+      transition-duration: 100ms;
+      transition-timing-function: ease-in-out;
+
+      & h3 {
+        background: linear-gradient(to right top, #db3e3e, #df3741, #e32e44, #e72347, #eb124b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+        font-weight: 900;
+      }
+
+      & .date {
+        font-size: 0.85rem;
+      }
+
+      & h3,
+      & .date,
+      & .lead {
+        text-wrap: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
-    & h3,
-    & .date,
-    & .lead {
-      text-wrap: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    & a:active {
+      transform: scale(0.95)
     }
   }
 }

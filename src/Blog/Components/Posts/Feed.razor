@@ -18,13 +18,13 @@
     <section role="feed" class="container">
       @foreach (var post in Posts)
       {
-        <NavLink href="@GetLink(post)">
-          <article>
+        <article>
+          <NavLink href="@GetLink(post)">
             <h3 title="@post.Title" >@post.Title</h3>
             <p class="date">@post.PublishedAt.ToString("MMMM d, yyyy")</p>
             <p class="lead">@post.Lead</p>
-          </article>
-        </NavLink>
+          </NavLink>
+        </article>
       }
     </section>
   }
