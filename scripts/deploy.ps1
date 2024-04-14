@@ -8,8 +8,7 @@ function StartContainer {
 
   $containerName = "blog.stevanfreeborn.com.$containerColor"
   $postDirEnv = "FilePostServiceOptions__PostsDirectory=wwwroot/posts"
-  $googleTagEnv = "GoogleAnalyticsTag=$env:GOOGLE_ANALYTICS_TAG"
-  $containerId = docker run -d -p 8080 --name $containerName --env $postDirEnv --env $googleTagEnv $dockerTag
+  $containerId = docker run -d -p 8080 --name $containerName --env $postDirEnv $dockerTag
 
   if ($LASTEXITCODE -ne 0) 
   {

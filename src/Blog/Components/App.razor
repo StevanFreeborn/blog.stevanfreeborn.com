@@ -13,12 +13,18 @@
 
 <body>
   <Routes />
-  <NavigationTracker />
   <script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+  <script src="https://www.googletagmanager.com/gtag/js?id=G-5JM0TZTRHF"></script>
   <script src="prism.js"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5JM0TZTRHF');
+  </script>
   <script src="_framework/blazor.web.js"></script>
-  <script src="_content/Blazor-Analytics/blazor-analytics.js"></script>
 </body>
 
 </html>
