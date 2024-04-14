@@ -1,3 +1,5 @@
+using Blog.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
@@ -25,12 +27,8 @@ app.UseStatusCodePagesWithRedirects("/Error/{0}");
 app
   .MapGet("/rss", async (HttpContext context, IPostService postService) =>
   {
-    var req = context.Request;
-
-    var scheme = req.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? req.Scheme;
-    var host = req.Headers["X-Forwarded-Host"].FirstOrDefault() ?? req.Host.Value;
-
-    var url = $"{scheme}://{host}{req.PathBase}";
+    var baseUrl = context.Request.GetBaseUrl();
+    var url = $"{baseUrl}{context.Request.PathBase}";
 
     var posts = await postService.GetPostsAsync();
 
