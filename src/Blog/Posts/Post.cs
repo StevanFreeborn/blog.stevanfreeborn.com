@@ -7,6 +7,7 @@ record Post
   public bool IsPublished { get; init; } = false;
   public DateTime PublishedAt { get; init; }
   public string Slug { get; init; } = string.Empty;
+  public string OpenGraphImage { get; init; } = string.Empty;
 }
 
 record PostWithContent : Post

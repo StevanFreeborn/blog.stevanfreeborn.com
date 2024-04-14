@@ -4,6 +4,7 @@ builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddScoped<IPostService, FilePostService>();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorComponents();
 
 var app = builder.Build();

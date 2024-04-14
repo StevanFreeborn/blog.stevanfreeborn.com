@@ -10,12 +10,19 @@
 }
 else
 {
-  <PageTitle>@BlogPost.Title - journal</PageTitle>
+  var title = $"{BlogPost.Title} - journal";
+  var description = BlogPost.Lead;
 
-  <PageScript Src="./Components/Pages/Post.razor.js" />
+  <PageTitle>@title</PageTitle>
 
   <HeadContent>
-    <meta name="description" content="@BlogPost.Lead">
+    <meta name="description" content="@description">
+    <OpenGraph 
+      PageTitle="@title" 
+      Description="@description" 
+      Type="article"
+      Image="@BlogPost.OpenGraphImage"
+    />
     <link rel="stylesheet" href="markdown.css">
     <link rel="stylesheet" href="prism.css">
   </HeadContent>
@@ -29,6 +36,8 @@ else
       @((MarkupString)BlogPost.Content)
     </div>
   </article>
+
+  <PageScript Src="./Components/Pages/Post.razor.js" />
 }
 
 @code 

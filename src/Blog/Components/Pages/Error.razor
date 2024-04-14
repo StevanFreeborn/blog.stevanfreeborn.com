@@ -1,7 +1,12 @@
 ﻿@page "/Error"
 @using System.Diagnostics
 
-<PageTitle>Error</PageTitle>
+<PageTitle>@PageTitle</PageTitle>
+<HeadContent>
+  <meta name="description" content="@Description" />
+  <OpenGraph PageTitle="@PageTitle" Description="@Description" />
+</HeadContent>
+
 
 <div class="container">
   <h2>Error</h2>
@@ -19,9 +24,10 @@
 {
   [CascadingParameter]
   private HttpContext? HttpContext { get; set; }
-
   private string? RequestId { get; set; }
   private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+  private const string PageTitle = "Error - journal";
+  private const string Description = "An unhandled error occurred while processing your request.";
 
   protected override void OnInitialized() =>
     RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;

@@ -1,8 +1,22 @@
 
 @page "/Error/404"
 
+<PageTitle>@PageTitle</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="@Description" />
+    <OpenGraph PageTitle="@PageTitle" Description="@Description" Image="@Image" />
+</HeadContent>
+
 <div class="container">
     <h2>Not Found</h2>
     <p>Hmm...it doesn't look like the page you were looking for exists, but we did find this adorable corgi.</p>
-    <img src="not-found-corgi.jpg" alt="A cute corgi" />
+    <img src="@Image" alt="A cute corgi" />
 </div>
+
+@code
+{
+  private const string PageTitle = "Not Found - journal";
+  private const string Description = "We couldn't find the page you were looking for. Here's a cute corgi instead.";
+  private const string Image = "not-found-corgi.jpg";
+}
