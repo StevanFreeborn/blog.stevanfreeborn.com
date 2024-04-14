@@ -1,0 +1,23 @@
+@inherits Bunit.TestContext
+
+@code {
+  [Test]
+  public void Footer_WhenRendered_ItShouldRenderFooterWithNavLinks()
+  {
+    var ctx = new TestContext();
+
+    var cut = ctx.Render(@<Footer />);
+
+    var footer = cut.Find("footer");
+    footer.Should().NotBeNull();
+
+    var navLinks = cut.FindAll("a");
+    navLinks.Count.Should().Be(3);
+
+    var navLinkTexts = navLinks.Select(x => x.TextContent);
+
+    navLinkTexts.Should().Contain("Code");
+    navLinkTexts.Should().Contain("Terms");
+    navLinkTexts.Should().Contain("Privacy");
+  }
+}
