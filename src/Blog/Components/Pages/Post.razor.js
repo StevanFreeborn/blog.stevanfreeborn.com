@@ -1,30 +1,15 @@
-let initialized = false;
-
 export function onLoad() {
-  if (initialized) {
-    return;
-  }
-
   init();
 }
 
 export function onUpdate() {
-  if (initialized) {
-    return;
-  }
-
   init();
-}
-
-export function onDispose() {
-  initialized = false;
 }
 
 function init(){
   addAnchors();
   addClipboard();
   Prism.highlightAll();
-  initialized = true;
 }
 
 /**
@@ -53,6 +38,10 @@ function addClipboard() {
   const codeBlocks = document.querySelectorAll('pre');
   
   codeBlocks.forEach((block) => {
+    if (block.querySelector('button.copy-button')) {
+      return;
+    }
+
     const button = document.createElement('button');
     button.className = 'copy-button';
     button.type = 'button';
