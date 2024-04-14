@@ -3,7 +3,8 @@
   "title": "Test Blog",
   "lead": "This is a test blog post.",
   "isPublished": true,
-  "publishedAt": "2024-04-10"
+  "publishedAt": "2024-04-10",
+  "openGraphImage": "posts/test-blog/og-image.png",
 }
 ```
 
@@ -45,6 +46,8 @@ Here are some examples of text formatting:
 ### Image
 
 ![Cute Dog](https://placedog.net/672?random)
+
+![The Office Gif](posts/test-blog/the-office.gif)
 
 ## Blockquotes
 

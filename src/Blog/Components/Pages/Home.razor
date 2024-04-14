@@ -1,10 +1,17 @@
 ﻿@page "/"
 
-<PageTitle>journal - A blog by Stevan Freeborn</PageTitle>
+<PageTitle>@PageTitle</PageTitle>
 
 <HeadContent>
-  <meta name="description" content="A blog by Stevan Freeborn" />
+  <meta name="description" content="@Description" />
+  <OpenGraph PageTitle="@PageTitle" Description="@Description" />
 </HeadContent>
 
 <h2 class="sr-only">Posts</h2>
 <Feed />
+
+@code
+{
+  private const string PageTitle = "journal - A blog by Stevan Freeborn";
+  private const string Description = "A blog by Stevan Freeborn";
+}

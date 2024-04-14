@@ -1,6 +1,7 @@
 $NGINX_CONFIG_PATH = "/etc/nginx/sites-available/blog.stevanfreeborn.com"
 
-function StartContainer {
+function StartContainer 
+{
   param (
     [string]$containerColor,
     [string]$dockerTag
@@ -56,7 +57,8 @@ function StartContainer {
   return $containerHostPort
 }
 
-function UpdateNginxConfig {
+function UpdateNginxConfig 
+{
   param (
     [string]$filePath,
     [string]$portNumber

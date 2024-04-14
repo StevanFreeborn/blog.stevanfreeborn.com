@@ -1,5 +1,12 @@
 @page "/privacy"
 
+<PageTitle>@PageTitle</PageTitle>
+
+<HeadContent>
+  <meta name="description" content="@Description" />
+  <OpenGraph PageTitle="@PageTitle" Description="@Description" />
+</HeadContent>
+
 <div class="container">
   <h2>Privacy Policy for journal</h2>
 
@@ -113,3 +120,9 @@
     <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
   </section>
 </div>
+
+@code
+{
+  private const string PageTitle = "Privacy Policy - journal";
+  private const string Description = "Privacy Policy for journal";
+}

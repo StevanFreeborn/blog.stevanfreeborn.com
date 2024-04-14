@@ -1,0 +1,40 @@
+@namespace Blog.Components.Utils
+@inject IHttpContextAccessor HttpContextAccessor
+
+<meta property="og:title" content="@PageTitle" />
+<meta property="og:description" content="@Description" />
+<meta property="og:type" content="@Type" />
+<meta property="og:url" content="@OpenGraphUrl" />
+<meta property="og:image" content="@OpenGraphImage" />
+
+@code
+{
+  [Parameter] 
+  public string PageTitle { get; set; } = "journal - A blog by Stevan Freeborn";
+  
+  [Parameter] 
+  public string Description { get; set; } = "A blog by Stevan Freeborn";
+  
+  [Parameter] 
+  public string Type { get; set; } = "website";
+
+  [Parameter] 
+  public string Image { get; set; } = string.Empty;
+
+  private string BaseUrl { get; set; } = string.Empty;
+  private string OpenGraphUrl { get; set; } = string.Empty;
+  private string OpenGraphImage => string.IsNullOrWhiteSpace(Image) 
+    ? $"{BaseUrl}/site-og.png"
+    : $"{BaseUrl}/{Image}";
+
+  protected override void OnInitialized()
+  {
+    if (HttpContextAccessor.HttpContext is null) {
+      Console.WriteLine("HttpContext is null");
+      return;
+    }
+
+    BaseUrl = $"{HttpContextAccessor.HttpContext.Request.Scheme}://{HttpContextAccessor.HttpContext.Request.Host}";
+    OpenGraphUrl = $"{BaseUrl}{HttpContextAccessor.HttpContext.Request.Path}";
+  }
+}

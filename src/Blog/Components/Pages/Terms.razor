@@ -1,5 +1,12 @@
 @page "/terms"
 
+<PageTitle>@PageTitle</PageTitle>
+
+<HeadContent>
+  <meta name="description" content="@Description" />
+  <OpenGraph PageTitle="@PageTitle" Description="@Description" />
+</HeadContent>
+
 <div class="container">
   <h2><strong>Terms and Conditions</strong></h2>
 
@@ -267,3 +274,9 @@
     </p>
   </section>
 </div>
+
+@code
+{
+  private const string PageTitle = "Terms and Conditions - journal";
+  private const string Description = "Terms and Conditions for journal";
+}
