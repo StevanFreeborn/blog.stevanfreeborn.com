@@ -69,3 +69,4 @@ jobs:
             export GOOGLE_ANALYTICS_TAG="${{ secrets.GOOGLE_ANALYTICS_TAG }}"
             chmod +x blog.stevanfreeborn.com/deploy.ps1
             sudo pwsh ./blog.stevanfreeborn.com/deploy.ps1 ${{ needs.build.outputs.version }}
+            unset GOOGLE_ANALYTICS_TAG
