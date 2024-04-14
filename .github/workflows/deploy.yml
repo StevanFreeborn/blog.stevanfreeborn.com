@@ -66,5 +66,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            export GOOGLE_ANALYTICS_TAG="${{ secrets.GOOGLE_ANALYTICS_TAG }}"
             chmod +x blog.stevanfreeborn.com/deploy.ps1
             sudo pwsh ./blog.stevanfreeborn.com/deploy.ps1 ${{ needs.build.outputs.version }}
