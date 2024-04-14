@@ -1,12 +1,15 @@
+using Blazor.Analytics;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddScoped<IPostService, FilePostService>();
 
-builder.Services
-  .AddRazorComponents()
-  .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents();
+
+var googleTag = builder.Configuration["GoogleAnalyticsTag"];
+builder.Services.AddGoogleAnalytics(googleTag);
 
 var app = builder.Build();
 
@@ -88,10 +91,7 @@ app
   .WithDisplayName("RSS Feed")
   .WithDescription("RSS feed for the blog");
 
-app
-  .MapRazorComponents<App>()
-  .AddInteractiveServerRenderMode();
-
+app.MapRazorComponents<App>();
 
 app.Run();
 

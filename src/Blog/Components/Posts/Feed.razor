@@ -18,19 +18,22 @@
     <section role="feed" class="container">
       @foreach (var post in Posts)
       {
-        <a href="/@post.Slug">
-          <article>
+        <article>
+          <NavLink href="@GetLink(post)">
             <h3 title="@post.Title" >@post.Title</h3>
             <p class="date">@post.PublishedAt.ToString("MMMM d, yyyy")</p>
             <p class="lead">@post.Lead</p>
-          </article>
-        </a>
+          </NavLink>
+        </article>
       }
     </section>
   }
 
-@code {
+@code 
+{
   private List<Post>? Posts;
+  
+  private string GetLink(Post post) => $"/{post.Slug}";
 
   protected override async Task OnInitializedAsync()
   {

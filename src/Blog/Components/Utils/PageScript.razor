@@ -1,0 +1,19 @@
+@namespace Blog.Components.Utils
+
+@*
+  custom web-component defined in:
+  Blog.lib.module.js
+
+  Manages loading colocated scripts
+  for pages and invoking expected
+  lifecycle methods to support
+  enhanced page navigation.
+*@
+<page-script src="@Src"></page-script>
+
+@code 
+{
+  [Parameter]
+  [EditorRequired]
+  public string Src { get; set; } = default!;
+}

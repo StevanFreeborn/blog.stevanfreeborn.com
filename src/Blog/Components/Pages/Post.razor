@@ -1,5 +1,4 @@
 @page "/{slug:nonfile}"
-@implements IAsyncDisposable
 @inject IPostService PostService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -13,11 +12,12 @@ else
 {
   <PageTitle>@BlogPost.Title - journal</PageTitle>
 
+  <PageScript Src="./Components/Pages/Post.razor.js" />
+
   <HeadContent>
     <meta name="description" content="@BlogPost.Lead">
     <link rel="stylesheet" href="markdown.css">
     <link rel="stylesheet" href="prism.css">
-    <script src="prism.js"></script>
   </HeadContent>
 
   <article>
@@ -31,11 +31,11 @@ else
   </article>
 }
 
-@code {
+@code 
+{
   [Parameter] 
   public string Slug { get; set; } = string.Empty;
   private PostWithContent? BlogPost;
-  private IJSObjectReference? module;
 
   protected override async Task OnInitializedAsync()
   {
@@ -48,33 +48,5 @@ else
     }
 
     BlogPost = post;
-  }
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
-    {
-      module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Post.razor.js");
-      await module.InvokeVoidAsync("addAnchors");
-      await module.InvokeVoidAsync("addClipboard");
-    }
-  }
-
-  async ValueTask IAsyncDisposable.DisposeAsync()
-  {
-    try
-    {
-      if (module is not null)
-      {
-        await module.DisposeAsync();
-      }
-    }
-    catch (Exception ex) when (ex is JSDisconnectedException)
-    {
-    }
-    catch (Exception ex)
-    {
-      Logger.LogError(ex, "Error disposing of the module");
-    }
   }
 }
