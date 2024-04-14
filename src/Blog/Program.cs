@@ -4,9 +4,7 @@ builder.Services.ConfigureOptions<FilePostServiceOptionsSetup>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddScoped<IPostService, FilePostService>();
 
-builder.Services
-  .AddRazorComponents()
-  .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents();
 
 var app = builder.Build();
 
@@ -88,10 +86,7 @@ app
   .WithDisplayName("RSS Feed")
   .WithDescription("RSS feed for the blog");
 
-app
-  .MapRazorComponents<App>()
-  .AddInteractiveServerRenderMode();
-
+app.MapRazorComponents<App>();
 
 app.Run();
 

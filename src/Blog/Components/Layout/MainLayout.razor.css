@@ -32,3 +32,11 @@ main {
   right: 0.75rem;
   top: 0.5rem;
 }
+
+#components-reconnect-modal {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 0.5rem;
+}

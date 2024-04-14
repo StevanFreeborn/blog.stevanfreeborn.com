@@ -1,9 +1,37 @@
+let initialized = false;
+
+export function onLoad() {
+  if (initialized) {
+    return;
+  }
+
+  init();
+}
+
+export function onUpdate() {
+  if (initialized) {
+    return;
+  }
+
+  init();
+}
+
+export function onDispose() {
+  initialized = false;
+}
+
+function init(){
+  addAnchors();
+  addClipboard();
+  Prism.highlightAll();
+  initialized = true;
+}
 
 /**
  * @summary Adds anchors to each heading in the post
  * so that users can link directly to them. 
 */ 
-export function addAnchors() {
+function addAnchors() {
   const selectors = [
     '.markdown-body h2',
     '.markdown-body h3',
@@ -21,7 +49,7 @@ export function addAnchors() {
  * @summary Adds a button to each code block that
  * allows users to copy the code to their clipboard.
  */
-export function addClipboard() {
+function addClipboard() {
   const codeBlocks = document.querySelectorAll('pre');
   
   codeBlocks.forEach((block) => {
