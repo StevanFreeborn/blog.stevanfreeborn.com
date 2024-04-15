@@ -116,19 +116,19 @@ if ($LASTEXITCODE -ne 0)
 }
 
 # Checkif green container is running
-$greenContainerId = docker ps --filter "name=blog.stevanfreeborn.com.green" --format "{{.ID}}"
+$blueContainerId = docker ps --filter "name=blog.stevanfreeborn.com.blue" --format "{{.ID}}"
 
-if ($null -eq $greenContainerId) 
+if ($null -eq $blueContainerId) 
 {
-  Write-Host "Green container is not running. Starting green container."
+  Write-Host "Blue container is not running. Starting blue container."
 
-  $greenContainerHostPort = StartContainer -containerColor "green" -dockerTag $dockerTag
+  $blueContainerHostPort = StartContainer -containerColor "blue" -dockerTag $dockerTag
 
-  Write-Host "Green container is running."
+  Write-Host "Blue container is running."
   
-  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $greenContainerHostPort
+  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $blueContainerHostPort
 
-  Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
+  Write-Host "Nginx configuration updated to point to blue container on port $blueContainerHostPort."
 
   nginx -t
 
@@ -152,15 +152,15 @@ if ($null -eq $greenContainerId)
 }
 else 
 {
-  Write-Host "Green container is running. Starting blue container."
+  Write-Host "Blue container is running. Starting green container."
 
-  $blueContainerHostPort = StartContainer -containerColor "blue" -dockerTag $dockerTag
+  $greenContainerHostPort = StartContainer -containerColor "green" -dockerTag $dockerTag
 
-  Write-Host "Blue container is running."
+  Write-Host "Green container is running."
 
-  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $blueContainerHostPort
+  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $greenContainerHostPort
 
-  Write-Host "Nginx configuration updated to point to blue container on port $blueContainerHostPort."
+  Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
 
   nginx -t
 
@@ -181,33 +181,33 @@ else
 
   Write-Host "Nginx reloaded. Successfully deployed version $version."
 
-  Write-Host "Stopping and removing green container."
+  Write-Host "Stopping and removing blue container."
   
-  docker stop $greenContainerId
+  docker stop $blueContainerId
 
   if ($LASTEXITCODE -ne 0) 
   {
-    Write-Host "Failed to stop green container."
+    Write-Host "Failed to stop blue container."
     exit 1
   }
 
-  docker rm $greenContainerId
+  docker rm $blueContainerId
 
   if ($LASTEXITCODE -ne 0) 
   {
-    Write-Host "Failed to remove green container."
+    Write-Host "Failed to remove blue container."
     exit 1
   }
 
-  Write-Host "Green container stopped and removed."
+  Write-Host "Blue container stopped and removed."
 
-  Write-Host "Switching blue container to green container."
+  Write-Host "Switching green container to blue container."
 
-  docker rename "blog.stevanfreeborn.com.blue" "blog.stevanfreeborn.com.green"
+  docker rename "blog.stevanfreeborn.com.green" "blog.stevanfreeborn.com.blue"
 
   if ($LASTEXITCODE -ne 0) 
   {
-    Write-Host "Failed to rename blue container to green container."
+    Write-Host "Failed to rename green container to blue container."
     exit 1
   }
 
