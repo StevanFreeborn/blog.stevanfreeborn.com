@@ -428,6 +428,7 @@
 
 .markdown-body ul,
 .markdown-body ol {
+  list-style-type: disc;
   margin-top: 0;
   margin-bottom: 0;
   padding-left: 2em;
