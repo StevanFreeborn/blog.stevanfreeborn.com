@@ -38,7 +38,7 @@ Specifically I asked the interwebz about building a markdown blog with Blazor. A
 
 [This video](https://youtu.be/B2TWGlE8noU?si=932lYmkT5Y2Yi8-Y) from [codepey](https://www.youtube.com/@codepey) was really helpful for laying out the overall architecture of the blog and pointing me towards a great library called [Markdig](https://github.com/xoofx/markdig) that I could use to convert markdown to HTML.
 
-I also found [this in-depth series](https://chrissainty.com/series/building-a-blogging-app-with-blazor/) from [Chris Sainty](https://twitter.com/chrissainty) that covers building a blogging app with Blazor. I did not read all the posts in the series because I was really looking to build an entire CRUD app and it is a bit dated now that .NET 8 is out, but from a quick scan of the posts it looks like a great resource for anyone looking to build a complete blogging app with Blazor.
+I also found [this in-depth series](https://chrissainty.com/series/building-a-blogging-app-with-blazor/) from [Chris Sainty](https://twitter.com/chrissainty) that covers building a blogging app with Blazor. I did not read all the posts in the series because I wasm't really looking to build an entire CRUD app and it is a bit dated now that .NET 8 is out, but from a quick scan of the posts it looks like a great resource for anyone looking to build a complete blogging app with Blazor.
 
 ## What Does This Look Like?
 
@@ -48,7 +48,7 @@ After reading and watching I felt like I had a pretty good idea of how I wanted 
 dotnet new blazor -ai --empty -o Blog
 ```
 
-I used the `--empty` flag because I wanted to build the site from scratch and not use the default template.[Bootstrap](https://getbootstrap.com/) is great, but I always feel like any practice I can get writing CSS is a good thing. I also opted-in to the `--all-interactive` version of the template because I thought it might be nice to have some server-supported interactivity if needed.
+I used the `--empty` flag because I wanted to build the site from scratch and not use the default template.[Bootstrap](https://getbootstrap.com/) is great, but I always feel like any practice I can get writing CSS is a good thing. I also opted-in to the all-interactive version of the template using the `-ai` flag because I thought it might be nice to have some server-supported interactivity if needed.
 
 Once the initial scaffolding was done I also setup a test project for the blog. I know [a Quality Engineer](https://www.linkedin.com/in/stevan-freeborn/) who writes tests - pretty wild right? But in my experience building projects I've found that you always regret not setting up testing from the beginning. I've also been trying to practice more of a Test-Driven Development workflow so I wanted to make sure I had a test project setup right away.
 
