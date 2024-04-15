@@ -50,7 +50,7 @@ dotnet new blazor -ai --empty -o Blog
 
 I used the `--empty` flag because I wanted to build the site from scratch and not use the default template.[Bootstrap](https://getbootstrap.com/) is great, but I always feel like any practice I can get writing CSS is a good thing. I also opted-in to the `--all-interactive` version of the template because I thought it might be nice to have some server-supported interactivity if needed.
 
-Once the initial scaffolding was done I also setup a test project for the blog. I know a quality engineer who writes tests - pretty wild right? But in my experience building projects I've found that you always regret not setting up testing from the beginning. I've also been trying to practice more of a Test-Driven Development workflow so I wanted to make sure I had a test project setup from the beginning.
+Once the initial scaffolding was done I also setup a test project for the blog. I know [a Quality Engineer](https://www.linkedin.com/in/stevan-freeborn/) who writes tests - pretty wild right? But in my experience building projects I've found that you always regret not setting up testing from the beginning. I've also been trying to practice more of a Test-Driven Development workflow so I wanted to make sure I had a test project setup right away.
 
 ## Deployment
 
