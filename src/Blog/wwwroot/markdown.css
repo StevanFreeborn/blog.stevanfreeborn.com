@@ -459,7 +459,7 @@
 
 .markdown-body pre {
   margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 16px;
   font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
   font-size: 12px;
   word-wrap: normal;
@@ -1129,10 +1129,15 @@
 }
 
 .markdown-body .markdown-alert {
-  padding: var(--base-size-8) var(--base-size-16);
+  padding: var(--base-size-8, 8px) var(--base-size-16, 16px);
   margin-bottom: 16px;
   color: inherit;
   border-left: .25em solid var(--color-border-default);
+}
+
+.markdown-body .markdown-alert .markdown-alert-title svg {
+  margin-right: var(--base-size-8, 8px);
+  fill: var(--color-text);
 }
 
 .markdown-body .markdown-alert>:first-child {
@@ -1188,4 +1193,19 @@
 
 .markdown-body .markdown-alert.markdown-alert-caution .markdown-alert-title {
   color: var(--color-danger-fg);
+}
+
+/* scroll code block not pre */
+/* so that copy button stays in */
+/* top right corner always */
+.markdown-body pre[class*=language-] {
+  overflow: hidden;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.markdown-body pre code {
+  display: block;
+  overflow: auto;
+  padding: 1rem;
 }

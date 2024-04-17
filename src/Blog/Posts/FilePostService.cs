@@ -14,7 +14,6 @@ class FilePostService(
 
   private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
     .UseAdvancedExtensions()
-    .UsePrism()
     .Build();
 
   private const string MetaFence = "meta";
