@@ -21,3 +21,6 @@ global using Microsoft.Playwright.NUnit;
 global using Moq;
 
 global using NUnit.Framework;
+global using Microsoft.AspNetCore.TestHost;
+global using Microsoft.AspNetCore.Hosting.Server.Features;
+global using Microsoft.AspNetCore.Http.Features;
