@@ -11,7 +11,6 @@
     <PackageReference Include="Markdig" Version="0.36.2" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="8.0.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.0.2" />
-    <PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
