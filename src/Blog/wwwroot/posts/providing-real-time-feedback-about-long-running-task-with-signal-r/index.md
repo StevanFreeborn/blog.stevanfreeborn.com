@@ -245,7 +245,6 @@ main {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
@@ -271,22 +270,203 @@ app
   })
   .WithName("AddTask")
   .WithDisplayName("Add Task")
-  .WithDescription("Add a new task to the queue")
-  .WithOpenApi();
+  .WithDescription("Add a new task to the queue");
 ```
 
 Run client and server. Click the add task button. You should see a success message with id of the task just added.
 
 ### Implement the task queue
 
+```csharp
+class BackgroundTask
+{
+  public string Id { get; set; } = Guid.NewGuid().ToString();
+}
+```
+
+```csharp
+class BackgroundTaskQueue
+{
+  private readonly Channel<BackgroundTask> _channel = Channel.CreateUnbounded<BackgroundTask>();
+
+  public async Task EnqueueAsync(BackgroundTask task)
+  {
+    await _channel.Writer.WriteAsync(task);
+  }
+
+  public async Task<BackgroundTask> DequeueAsync(CancellationToken cancellationToken)
+  {
+    return await _channel.Reader.ReadAsync(cancellationToken);
+  }
+}
+```
+
 ### Implement the task service
+
+```csharp
+class TaskService(BackgroundTaskQueue taskQueue) : BackgroundService
+{
+  private readonly BackgroundTaskQueue _taskQueue = taskQueue;
+
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  {
+    while (!stoppingToken.IsCancellationRequested)
+    {
+      var task = await _taskQueue.DequeueAsync(stoppingToken);
+
+      // Execute the task
+      Console.WriteLine($"Task {task.Id} is starting");
+  
+      await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+
+      Console.WriteLine($"Task {task.Id} is complete");
+    }
+  }
+}
+```
 
 ### Update add task endpoint to add task to queue
 
+```csharp
+app
+  .MapPost("/add-task", async (BackgroundTaskQueue queue) =>
+  {
+    var task = new BackgroundTask();
+    await queue.EnqueueAsync(task);
+    return Results.Json(data: task, statusCode: (int)HttpStatusCode.Created);
+  })
+  .WithName("AddTask")
+  .WithDisplayName("Add Task")
+  .WithDescription("Add a new task to the queue");
+```
+
 ### Let's add signal r hub
+
+```csharp
+builder.Services.AddSignalR();
+
+app.MapHub<TaskHub>("/task-hub");
+```
 
 ### Add client code to establish connection to server hub
 
 ```sh
 npm install @microsoft/signalr
 ```
+
+```vue
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+import { HubConnectionBuilder } from '@microsoft/signalr'
+
+const updates = ref<string[]>([])
+
+const connection = new HubConnectionBuilder().withUrl('https://localhost:7138/task-hub').build()
+
+connection.on('ReceiveMessage', (message: string) => {
+  console.log(message)
+})
+
+onMounted(() => {
+  try {
+    connection.start()
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+onUnmounted(() => {
+  try {
+    connection.stop()
+  } catch (error) {
+    console.error(error)
+  }
+})
+</script>
+...
+```
+
+### Update server CORS policy to allow signal r connections
+
+```csharp
+...
+builder.Services.AddCors(
+  options =>
+    options.AddDefaultPolicy(
+      builder => builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithOrigins("https://localhost:5173")
+    )
+);
+...
+```
+
+### Update server to actually send updates to client as tasks are processed
+
+```csharp
+class TaskService(
+  BackgroundTaskQueue taskQueue,
+  IHubContext<TaskHub> taskHub
+) : BackgroundService
+{
+  private readonly BackgroundTaskQueue _taskQueue = taskQueue;
+  private readonly IHubContext<TaskHub> _taskHub = taskHub;
+
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  {
+    while (!stoppingToken.IsCancellationRequested)
+    {
+      var task = await _taskQueue.DequeueAsync(stoppingToken);
+
+      // Execute the task
+      await _taskHub.Clients.All.SendAsync("ReceiveMessage", $"Task {task.Id} is starting", cancellationToken: stoppingToken);
+
+      await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+
+      await _taskHub.Clients.All.SendAsync("ReceiveMessage", $"Task {task.Id} is complete", cancellationToken: stoppingToken);
+    }
+  }
+}
+```
+
+### Update client to display updates instead of logging them
+
+```vue
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+import { HubConnectionBuilder } from '@microsoft/signalr'
+
+const updates = ref<string[]>([])
+
+const connection = new HubConnectionBuilder().withUrl('https://localhost:7138/task-hub').build()
+
+connection.on('ReceiveMessage', (message: string) => {
+  updates.value = [...updates.value, message]
+})
+...
+</script>
+
+<template>
+  <main>
+    ...
+    <div class="updates-container">
+      <h2>Updates</h2>
+      <ul>
+        <li v-for="(update, index) in updates" :key="index">{{ update }}</li>
+      </ul>
+    </div>
+  </main>
+</template>
+...
+```
+
+### Now you can run the client and server and see the updates as tasks are processed
+
+Pretty cool huh?
+
+## Conclusion
+
+Probably mentioned typed hubs here.
