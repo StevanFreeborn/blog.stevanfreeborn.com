@@ -40,9 +40,9 @@
         text-overflow: ellipsis;
       }
     }
+  }
 
-    & a:active {
-      transform: scale(0.95)
-    }
+  & article:active {
+    transform: scale(0.95)
   }
 }

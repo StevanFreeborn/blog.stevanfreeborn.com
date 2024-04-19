@@ -1,11 +1,3 @@
-using Blog.Posts;
-
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 namespace Blog.Tests.EndToEnd;
 
 public class BlogHostFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class

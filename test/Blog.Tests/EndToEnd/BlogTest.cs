@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
-
 namespace Blog.Tests.EndToEnd;
 
 [TestFixture]

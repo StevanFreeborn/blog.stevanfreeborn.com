@@ -10,7 +10,10 @@ global using FluentAssertions;
 
 global using Microsoft.AspNetCore.Hosting;
 global using Microsoft.AspNetCore.Hosting.Server;
+global using Microsoft.AspNetCore.Hosting.Server.Features;
+global using Microsoft.AspNetCore.Http.Features;
 global using Microsoft.AspNetCore.Mvc.Testing;
+global using Microsoft.AspNetCore.TestHost;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
