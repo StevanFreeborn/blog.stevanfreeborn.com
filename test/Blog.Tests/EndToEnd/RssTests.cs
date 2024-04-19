@@ -24,7 +24,7 @@ public class RssTests : BlogTest
 
     using var xmlReader = XmlReader.Create(streamReader, settings);
     var feed = SyndicationFeed.Load(xmlReader);
-    
+
     feed.Title.Text.Should().Be("journal");
     feed.Description.Text.Should().Be("A blog by Stevan Freeborn");
     feed.Items.Should().HaveCount(2);
