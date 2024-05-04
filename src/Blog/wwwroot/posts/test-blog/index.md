@@ -2,7 +2,7 @@
 {
   "title": "Test Blog",
   "lead": "This is a test blog post.",
-  "isPublished": true,
+  "isPublished": false,
   "publishedAt": "2024-04-10",
   "openGraphImage": "posts/test-blog/og-image.png",
 }
