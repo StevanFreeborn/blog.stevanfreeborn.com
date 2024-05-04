@@ -22,4 +22,4 @@ For example it’s pretty accepted in data analytics use cases that if a user ma
 
 I’m sure there is a ton of way smarter people than me working on this stuff, but after some initial experiments these are some of the things I’m thinking about and wondering how to tackle.
 
-I know there is so much pressure on companies right now to be a part of the AI wave, but in my - knowing limited - experience it seems like using it in a meaningful way is a pretty big undertaking that requires a lot of considerations both technical and non-technical.
+I know there is so much pressure on companies right now to be a part of the AI wave, but in my - knowingly limited - experience it seems like using it in a meaningful way is a pretty big undertaking that requires a lot of considerations both technical and non-technical.
