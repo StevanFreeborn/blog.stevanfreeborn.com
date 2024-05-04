@@ -35,6 +35,7 @@
       & h3,
       & .date,
       & .lead {
+        white-space: nowrap;
         text-wrap: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
