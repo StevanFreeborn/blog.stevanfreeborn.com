@@ -2,8 +2,8 @@
 {
   "title": "Providing Real-Time Feedback About Long-Running Task with SignalR",
   "lead": "",
-  "isPublished": true,
-  "publishedAt": "2024-04-15",
+  "isPublished": false,
+  "publishedAt": "<NEEDS SET>",
   "openGraphImage": "posts/providing-real-time-feedback-about-long-running-task-with-signal-r/og-image.png",
 }
 ```
