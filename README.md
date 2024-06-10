@@ -2,7 +2,7 @@
 
 The source code for [my blog](https://blog.stevanfreeborn.com).
 
-You can read more in detail about building in [this blog post](https://blog.stevanfreeborn.com/building-a-markdown-blog-with-blazor-and-docker).
+You can read more in detail about building the blog in [this blog post](https://blog.stevanfreeborn.com/building-a-markdown-blog-with-blazor-and-docker).
 
 ## Technologies and Languages Used
 
