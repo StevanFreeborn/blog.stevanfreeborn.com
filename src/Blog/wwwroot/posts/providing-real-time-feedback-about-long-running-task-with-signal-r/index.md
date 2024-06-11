@@ -8,44 +8,19 @@
 }
 ```
 
-There are times when a user takes an action in your system that requires it to run in the background.
+Over the last few months I've been working on an app called [OnxGraph](https://onxgraph.stevanfreeborn.com) which is a tool for administrators of [Onspring](https://onspring.com) to visualize relationships between their content. When I began building it I knew that I was going to have to rely on talking to Onspring's public API to get the data I needed to display the graph's nodes and edges. However there is no way for me to know ahead of time how much data I would be dealing with. I could be dealing with a few nodes and edges which would only require a handful of API requests or many more that would require many API requests.
 
-Things like:
+This presented the challenge of how to make sure that a user's request to create a graph didn't timeout while waiting for the data to be fetched as well as provide feedback to the user about the progress of the request. I decided this best approach was not to do all this work inline with the request but instead to queue the work and then provide the user with a way to check on the progress of the request once it was dequeued and processing.
 
-- Generating a report
-- Processing a large file
-- Running a complex algorithm
-- Sending a large number of emails
+The easiest solution here was probably just do some long polling. However I've been wanting to get some experience with [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr) for a while now and this seemed like a good opportunity to do so. SignalR is a library that makes it easy to add real-time web functionality to your applications. It's built on top of [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) and abstracts away the complexity of managing connections. Plus as a fallback it will use polling if WebSockets aren't available.
 
-In these cases you don't want to hold your user hostage by making them wait for the task to complete before giving a response.
+I thought since I went through the process of setting this up for OnxGraph I'd write a short blog post about how to get it working. I'll be using a simple example of a task queue that processes tasks and sends updates to clients as the tasks are processed. We will have two parts to this example.
 
-Instead you'd rather immediately acknowledge the user's request, add the task to some kind of queue, and then give the user feedback about how that task is progressing.
+1. A simple [Vue.js](https://vuejs.org) client that will have a form to add a task to the queue and display the tasks added and update them after being processed.
 
-This leaves it up to the user if they want to wait for the task to complete or if they want to navigate away and come back later.
+2. A simple [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) web api that will have a singleton service that manages an in-memory queue, a hosted background service that processes the queue and sends updates to the clients, an endpoint to add a task to the queue, and a hub that the clients can connect to to receive updates.
 
-Traditionally you could provide this feedback with long polling, but websockets offer a way to open a persistent connection between the client and the server. The server then can push updates to the client in real-time.
-
-SignalR is a library that makes it easy to add real-time web functionality to your applications. It's built on top of websockets and abstracts away the complexity of managing connections. Plus as a fallback it will use polling if websockets aren't available.
-
-How to set this up?
-
-- Let's build a simple client using vue
-- Let's build a simple server using a .NET web api
-
-The web api will have a singleton service that manages an in-memory queue.
-The web api will have a hosted background service that processes the queue and sends updates to the clients.
-The web api will have an endpoint to add a task to the queue.
-The web api will have a hub that the clients can connect to to receive updates.
-The client will have a form to add a task to the queue.
-The client will then redirect to an edit page where it will connect to the hub and receive updates.
-The task will have the following states:
-
-- Pending
-- Processing
-- Completed
-- Failed
-
-The client will display the current state of the task and any messages that are sent with the updates.
+You can find all the code for this example in this [repo](https://github.com/StevanFreeborn/onx-graph).
 
 ## Setting up client
 
@@ -109,7 +84,7 @@ export default defineConfig({
 })
 ```
 
-Run client in dev
+Run client in dev mode so we can make changes and see them reflected in the browser right away.
 
 ```sh
 npm run dev
@@ -121,22 +96,19 @@ npm run dev
 mkdir server
 cd server
 dotnet new webapi -o Server.API
-dotnet new xunit -o Server.Tests
-dotnet add Server.API reference Server.Tests
 dotnet new sln -n Server
 dotnet sln add Server.API
-dotnet sln add Server.Tests
 ```
 
-Update launchSettings.json so it runs on https:
+Update `launchSettings.json` so it runs on https by default. You just have to make sure the `https` profile is the first one in the profiles object so it is the default profile.
 
 ```json
 "profiles": {
-    "http": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "",
       "applicationUrl": "https://localhost:7138;http://localhost:5031",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -145,7 +117,7 @@ Update launchSettings.json so it runs on https:
 }
 ```
 
-Update Program.cs so swagger ui launches on root:
+Update `Program.cs` so swagger ui launches on root. This is not necessary but makes it more convenient to access the swagger ui.
 
 ```csharp
 app.UseSwaggerUI(config =>
@@ -155,7 +127,7 @@ app.UseSwaggerUI(config =>
 });
 ```
 
-Update program.cs so client can make CORS requests:
+Update `Program.cs` so client can make CORS requests. This is fine for development but you'll want to lock this down in production.
 
 ```csharp
 ...
@@ -172,7 +144,7 @@ builder.Services.AddCors(
 app.UseCors();
 ```
 
-Run server in watch mode for development:
+Run server in watch mode for development because we will be making changes to it and hot reload is noice.
 
 ```sh
 dotnet watch --project Server.API
@@ -180,15 +152,11 @@ dotnet watch --project Server.API
 
 ## Setup debugging
 
-If you want to debug either the client or the server you most definitely can. I've set the my repo to do this using visual studio code.
+Using a debugger is great and I think everyone should be using one. If you want to debug either the client or the server you most definitely can in this case. I've set this up in the example repo using visual studio code. Take a look at the `.vscode/launch.json` file.
 
-## Add client code to add task to queue
+### Allow client to add tasks to the queue
 
-Just some styling to make things centered.
-
-In base.css add display flex to body
-
-Replace app.css with:
+First some house keeping just to get things centered. Update `main.css` to contain the following styles:
 
 ```css
 #app {
@@ -199,7 +167,7 @@ Replace app.css with:
 }
 ```
 
-Replace App.vue with:
+Now let's start with the client and add a button that when clicked will add a task to the queue. We will also display the status of the task. We will use the [Vue Composition API](https://v3.vuejs.org/guide/composition-api-introduction.html) to manage the state of the task.
 
 ```vue
 <script setup lang="ts">
@@ -256,11 +224,13 @@ main {
 </style>
 ```
 
-## Add server code to add task to queue
+### Allow server to add tasks to the queue
 
-Update program.cs to remove all references to weather forecast.
+We will now need to add that `add-task` endpoint to the server so that we can receive the task from the client and get it added into the queue.
 
-Change weatherforecast endpoint to add-task endpoint. Map as post method That just returns new anonymous object with id property set to new guid.
+Let's start by cleaning up the boiler plate code that comes with the web api template by updating `Program.cs` to remove all references to weather forecast.
+
+Next we will change the `weatherforecast` endpoint to `add-task` endpoint. And use the `MapPost` method instead of `MapGet` to add the endpoint. We will start by just responding with a new task id.
 
 ```csharp
 app
@@ -273,7 +243,9 @@ app
   .WithDescription("Add a new task to the queue");
 ```
 
-Run client and server. Click the add task button. You should see a success message with id of the task just added.
+### Make sure the client can add tasks to the queue
+
+At this point we should be able to go to the client and click the button to add a task to the queue. You should see the status change to `Adding task...` and then `Task added!`. If you see `Failed to add task` then something went wrong. You can check the console for more information.
 
 ### Implement the task queue
 
