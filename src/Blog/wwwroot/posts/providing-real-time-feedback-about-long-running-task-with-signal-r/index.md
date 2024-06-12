@@ -1,9 +1,9 @@
 ```json meta
 {
   "title": "Providing Real-Time Feedback About Long-Running Task with SignalR",
-  "lead": "",
-  "isPublished": false,
-  "publishedAt": "<NEEDS SET>",
+  "lead": "I've been developing OnxGraph to help Onspring admins visualize content relationships. To handle varying data loads without timeouts, I used SignalR for real-time updates. This post details setting up a task queue with Vue.js and ASP.NET Core to provide user feedback on long running background work.",
+  "isPublished": true,
+  "publishedAt": "2024-06-12",
   "openGraphImage": "posts/providing-real-time-feedback-about-long-running-task-with-signal-r/og-image.png",
 }
 ```
@@ -20,9 +20,9 @@ I thought since I went through the process of setting this up for OnxGraph I'd w
 
 2. A simple [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) web api that will have a singleton service that manages an in-memory queue, a hosted background service that processes the queue and sends updates to the clients, an endpoint to add a task to the queue, and a hub that the clients can connect to to receive updates.
 
-You can find all the code for this example in this [repo](https://github.com/StevanFreeborn/onx-graph).
+You can find all the code for this example in this [repo](https://github.com/StevanFreeborn/real-time-processing-with-signal-r).
 
-## Setting up client
+## Setting up the client
 
 ```sh
 npm create vue@latest
@@ -90,7 +90,7 @@ Run client in dev mode so I can make changes and see them reflected in the brows
 npm run dev
 ```
 
-## Setting up server
+## Setting up the server
 
 ```sh
 mkdir server
@@ -153,6 +153,8 @@ dotnet watch --project Server.API
 ## Setup debugging
 
 Using a debugger is great and I think everyone should be using one. If you want to debug either the client or the server you most definitely can in this case. I've set this up in the example repo using visual studio code. Take a look at the `.vscode/launch.json` file.
+
+## Implementation
 
 ### Allow client to add tasks to the queue
 
@@ -418,6 +420,8 @@ Great I've got the ability establish a connection to the server hub when my clie
 
 ### Update server to actually send updates to client as tasks are processed
 
+If you recall we add SignalR as a service in `Program.cs`. Doing this allows us to inject an instance of `IHubContext` into our services. This is what we will use to send messages to the clients. I'll update the `TaskService` to send a message to the clients when a task is started and when a task is completed. In this case the message is a simple object with the task id and the status of the task. SignalR will take care of serializing this object for me.
+
 ```csharp
 class TaskService(
   BackgroundTaskQueue taskQueue,
@@ -451,19 +455,44 @@ class TaskService(
 }
 ```
 
+I think it is good to point out that I am making sure that the string of text I am passing to the `SendAsync` method is the same as the string I am listening for on the client.
+
+> [!NOTE]
+> If you find this a bit brittle you are not alone. SignalR supports strongly typed hubs which you can read more about [here](https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-8.0#strongly-typed-hubs).
+
+Great now I should be able to display the updates on the client as the tasks are being processed.
+
 ### Update client to display updates instead of logging them
+
+Again simple is the game here so all I am going to do is maintain an array of tasks in the client and update the status of the task as I receive updates from the server about it. I'll update the `ReceiveMessage` listener to update the status of the task in the array and then update the array so that the changes are reflected in the UI.
 
 ```vue
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 
-const updates = ref<string[]>([])
+type Task = {
+  id: string
+  status: string
+}
 
-const connection = new HubConnectionBuilder().withUrl('https://localhost:7138/task-hub').build()
+const tasks = ref<Task[]>([])
 
-connection.on('ReceiveMessage', (message: string) => {
-  updates.value = [...updates.value, message]
+const connection = new HubConnectionBuilder()
+  .withUrl('https://localhost:7138/task-hub', { withCredentials: false })
+  .build()
+
+connection.on('ReceiveMessage', (taskUpdate: Task) => {
+  const existingTask = tasks.value.find((update) => update.id === taskUpdate.id)
+
+  if (existingTask === undefined) {
+    tasks.value = [...tasks.value, taskUpdate]
+    return
+  }
+
+  existingTask.status = taskUpdate.status
+
+  tasks.value = [...tasks.value]
 })
 ...
 </script>
@@ -471,21 +500,31 @@ connection.on('ReceiveMessage', (message: string) => {
 <template>
   <main>
     ...
-    <div class="updates-container">
-      <h2>Updates</h2>
+    <div class="tasks-container">
+      <h2>Tasks</h2>
       <ul>
-        <li v-for="(update, index) in updates" :key="index">{{ update }}</li>
+        <li v-for="task in tasks" :key="task.id">{{ task.id }}: {{ task.status }}</li>
       </ul>
     </div>
   </main>
 </template>
+
+<style scoped>
 ...
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+</style>
 ```
 
 ### Now you can run the client and server and see the updates as tasks are processed
+
+![Tasks Processing](posts/providing-real-time-feedback-about-long-running-task-with-signal-r/tasks_processing.gif)
 
 Pretty cool huh?
 
 ## Conclusion
 
-Probably mentioned typed hubs here.
+I hope this post has been helpful in showing you how to get started with SignalR. I think it is a really powerful tool that can be used to add a lot of value to an application. I've only scratched the surface of what you can do with it here. I would encourage you to read the [documentation](https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction?view=aspnetcore-8.0) to learn more about what you can do with it.
