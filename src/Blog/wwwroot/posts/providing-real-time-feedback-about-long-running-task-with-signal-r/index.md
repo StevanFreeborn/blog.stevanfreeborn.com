@@ -14,7 +14,7 @@ This presented the challenge of how to make sure that a user's request to create
 
 The easiest solution here was probably just do some long polling. However I've been wanting to get some experience with [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr) for a while now and this seemed like a good opportunity to do so. SignalR is a library that makes it easy to add real-time web functionality to your applications. It's built on top of [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) and abstracts away the complexity of managing connections. Plus as a fallback it will use polling if WebSockets aren't available.
 
-I thought since I went through the process of setting this up for OnxGraph I'd write a short blog post about how to get it working. I'll be using a simple example of a task queue that processes tasks and sends updates to clients as the tasks are processed. We will have two parts to this example.
+I thought since I went through the process of setting this up for OnxGraph I'd write a short blog post about how to get it working. I'll be using a simple example of a task queue that processes tasks and sends updates to clients as the tasks are processed. I will have two parts to this example.
 
 1. A simple [Vue.js](https://vuejs.org) client that will have a form to add a task to the queue and display the tasks added and update them after being processed.
 
@@ -84,7 +84,7 @@ export default defineConfig({
 })
 ```
 
-Run client in dev mode so we can make changes and see them reflected in the browser right away.
+Run client in dev mode so I can make changes and see them reflected in the browser right away.
 
 ```sh
 npm run dev
@@ -144,7 +144,7 @@ builder.Services.AddCors(
 app.UseCors();
 ```
 
-Run server in watch mode for development because we will be making changes to it and hot reload is noice.
+Run server in watch mode for development because I will be making changes to it and hot reload is noice.
 
 ```sh
 dotnet watch --project Server.API
@@ -167,7 +167,7 @@ First some house keeping just to get things centered. Update `main.css` to conta
 }
 ```
 
-Now let's start with the client and add a button that when clicked will add a task to the queue. We will also display the status of the task. We will use the [Vue Composition API](https://v3.vuejs.org/guide/composition-api-introduction.html) to manage the state of the task.
+Now let's start with the client and add a button that when clicked will add a task to the queue. I will also display the status of the task. I'll use the [Vue Composition API](https://v3.vuejs.org/guide/composition-api-introduction.html) to manage the state of the task.
 
 ```vue
 <script setup lang="ts">
@@ -226,11 +226,11 @@ main {
 
 ### Allow server to add tasks to the queue
 
-We will now need to add that `add-task` endpoint to the server so that we can receive the task from the client and get it added into the queue.
+I will now need to add that `add-task` endpoint to the server so that I can receive the task from the client and get it added into the queue.
 
 Let's start by cleaning up the boiler plate code that comes with the web api template by updating `Program.cs` to remove all references to weather forecast.
 
-Next we will change the `weatherforecast` endpoint to `add-task` endpoint. And use the `MapPost` method instead of `MapGet` to add the endpoint. We will start by just responding with a new task id.
+Next I'll change the `weatherforecast` endpoint to `add-task` endpoint. And use the `MapPost` method instead of `MapGet` to add the endpoint. I'll start by just responding with a new task id.
 
 ```csharp
 app
@@ -245,13 +245,13 @@ app
 
 ### Make sure the client can add tasks to the queue
 
-At this point we should be able to go to the client and click the button to add a task to the queue. You should see the status change to `Adding task...` and then `Task added!`. If you see `Failed to add task` then something went wrong. You can check the console for more information.
+At this point I should be able to go to the client and click the button to add a task to the queue. I should see the status change to `Adding task...` and then `Task added!`. If you see `Failed to add task` then something went wrong. You can check the console for more information.
 
 ### Implement the task queue
 
-So that is cool. We can take a task from the client, send it to the server, and get a response back. But we need to actually do something with that task so it can actually be processed. Let's start by creating a class to represent the task.
+So that is cool. I can take a task from the client, send it to the server, and get a response back. But I still need to actually do something with that task so it can actually be processed. I'll start by creating a class to represent the task.
 
-We will use something really generic like a `BackgroundTask` class that has an `Id` property that is set to a new guid when the task is created.
+I'll use something really generic like a `BackgroundTask` class that has an `Id` property that is set to a new guid when the task is created.
 
 ```csharp
 class BackgroundTask
@@ -260,7 +260,7 @@ class BackgroundTask
 }
 ```
 
-Now that we can represent these tasks we need to create a queue to persist them while they are waiting to be processed. This in a real world scenario would likely be sorted by some sort of persistent store like RabbitMQ or Azure Service Bus. But for this example we will just use an in-memory queue implemented with a [Channels](https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) and a class called `BackgroundTaskQueue` that we will register as a singleton service.
+Now that I can represent these tasks I need to create a queue to persist them while they are waiting to be processed. This in a real world scenario would likely be sorted by some sort of persistent store like RabbitMQ or Azure Service Bus. But for this example I'll just use an in-memory queue implemented with [Channels](https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) and a class called `BackgroundTaskQueue` that will be registered as a singleton service.
 
 ```csharp
 class BackgroundTaskQueue
@@ -279,11 +279,11 @@ class BackgroundTaskQueue
 }
 ```
 
-This class has two methods `EnqueueAsync` and `DequeueAsync`. The `EnqueueAsync` method will add a task to the queue and the `DequeueAsync` method will remove a task from the queue. We will be able to consume these methods in the `TaskService` class that we will create next.
+This class has two methods `EnqueueAsync` and `DequeueAsync`. The `EnqueueAsync` method will add a task to the queue and the `DequeueAsync` method will remove a task from the queue. I can now consume these methods in the `TaskService` class that I'll create next.
 
 ### Implement the task service
 
-We are getting close to having everything wired up. But we are still missing a way to actual process these tasks which we are receiving from the client and sticking in our queue. For this we can create a class called `TaskService` that will be a hosted service that will run in the background and continuously pull tasks out of the queue and process them.
+I'm getting close to having everything wired up. But I am still missing a way to actual process these tasks which I am receiving from the client and sticking in my queue. For this I can create a class called `TaskService` that will be a hosted service that will run in the background and continuously pull tasks out of the queue and process them.
 
 ```csharp
 class TaskService(BackgroundTaskQueue taskQueue) : BackgroundService
@@ -311,14 +311,14 @@ class TaskService(BackgroundTaskQueue taskQueue) : BackgroundService
 }
 ```
 
-In the service of keeping things super simple in the example we are just going to log the start and stop of the task and simulate some async work with a random delay between 5 and 30 seconds. In a real world scenario you would be doing some actual work here.
+In the service of keeping things super simple in the example I am just going to log the start and stop of the task and simulate some async work with a random delay between 5 and 30 seconds. In a real world scenario I would be doing some actual work here.
 
 > [!NOTE]
-> I am wrapping the processing work in a call to `Task.Run` because in this scenario we are firing and forgetting the task and I don't want to block the background service from processing other tasks. In a real world scenario you would want to be more careful about how you handle exceptions when doing this.
+> I am wrapping the processing work in a call to `Task.Run` because in this scenario I am firing and forgetting the task and I don't want to block the background service from processing other tasks. In a real world scenario I would want to be more careful about how I handle exceptions when doing this.
 
 ### Update add task endpoint to add task to queue
 
-Great we got our queue and we've got a service to process that queue, but our tasks aren't actually yet going into the queue even thought they are making it to the server. Let's update the `add-task` endpoint to actually add the task to the queue.
+Great I got my queue and I've got a service to process that queue, but my tasks aren't actually yet going into the queue even thought they are making it to the server. I'll update the `add-task` endpoint to actually add the task to the queue.
 
 ```csharp
 app
@@ -341,9 +341,23 @@ This gets to a full round trip of...
 4. Letting client know the task was added
 5. Task being processed by the service
 
-However we still haven't done anything to address the initial problem of providing feedback to the client about the progress of the task as it is being processed. Let's do that now.
+However I still haven't done anything to address the initial problem of providing feedback to the client about the progress of the task as it is being processed. I'll do that now.
 
-### Let's add signal r hub
+### Brief overview of SignalR pieces
+
+SignalR is going to allow me to have a real-time connection between the client and the server. I can then use this connection to send messages from the server to the client and vice versa. I can then have the client and server list for these messages and do something when they get them. This means I will need to setup something on either side of the connection to handle the sending and receiving of these messages.
+
+In SignalR parlance this means that on the server I will have what SignalR calls a hub. This hub will allow me to establish connections with one or more clients when they want to connect. And on the client I will have a hub connection that will allow me to establish a connection with the server hub.
+
+### Let's add the signal r hub
+
+There isn't a lot to do to get this working. You'll need to first make sure you have the SignalR package installed.
+
+```sh
+dotnet add package Microsoft.AspNetCore.SignalR
+```
+
+Then you will need to register the SignalR service in `Program.cs` and map the hub to an endpoint of your choosing.
 
 ```csharp
 builder.Services.AddSignalR();
@@ -351,11 +365,20 @@ builder.Services.AddSignalR();
 app.MapHub<TaskHub>("/task-hub");
 ```
 
+> [!NOTE]
+> SignalR does support handling authentication and authorization. You can read more about that [here](https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0).
+
 ### Add client code to establish connection to server hub
+
+On the client you'll need to also install the SignalR package.
 
 ```sh
 npm install @microsoft/signalr
 ```
+
+Then you will want to create a connection to the server hub so that you can listen to and send messages. The way you do this will depend on how exactly you are implementing your client, but the idea is generally the same. Since my client is a Vue.js app I will use the Vue Composition API to create a connection to the server hub.
+
+When this component is served I will create a connection using the APIs provided by the `@microsoft/signalr` package and register a listener for the `ReceiveMessage` event that will just logged the message that is received. I will then start the connection when the component is mounted and also stop the connection when the component is unmounted.
 
 ```vue
 <script setup lang="ts">
@@ -364,7 +387,9 @@ import { HubConnectionBuilder } from '@microsoft/signalr'
 
 const updates = ref<string[]>([])
 
-const connection = new HubConnectionBuilder().withUrl('https://localhost:7138/task-hub').build()
+const connection = new HubConnectionBuilder()
+  .withUrl('https://localhost:7138/task-hub', { withCredentials: false })
+  .build()
 
 connection.on('ReceiveMessage', (message: string) => {
   console.log(message)
@@ -389,23 +414,7 @@ onUnmounted(() => {
 ...
 ```
 
-### Update server CORS policy to allow signal r connections
-
-```csharp
-...
-builder.Services.AddCors(
-  options =>
-    options.AddDefaultPolicy(
-      builder => builder
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials()
-        .WithOrigins("https://localhost:5173")
-    )
-);
-...
-```
+Great I've got the ability establish a connection to the server hub when my client is served and listen for updates. I've also got the ability to add tasks to the queue and process them. However my client isn't actually getting any updates about the tasks as they are being processed. We'll have to go back to the server to fix that.
 
 ### Update server to actually send updates to client as tasks are processed
 
@@ -424,12 +433,19 @@ class TaskService(
     {
       var task = await _taskQueue.DequeueAsync(stoppingToken);
 
-      // Execute the task
-      await _taskHub.Clients.All.SendAsync("ReceiveMessage", $"Task {task.Id} is starting", cancellationToken: stoppingToken);
+      _ = Task.Run(async () =>
+      {
+        var startingUpdate = new { task.Id, Status = "Starting" };
+        Console.WriteLine($"Task {task.Id} is starting");
+        await _taskHub.Clients.All.SendAsync("ReceiveMessage", startingUpdate, cancellationToken: stoppingToken);
 
-      await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        var randomNumberOfSeconds = new Random().Next(5, 30);
+        await Task.Delay(TimeSpan.FromSeconds(randomNumberOfSeconds), stoppingToken);
 
-      await _taskHub.Clients.All.SendAsync("ReceiveMessage", $"Task {task.Id} is complete", cancellationToken: stoppingToken);
+        var finishedUpdate = new { task.Id, Status = $"Completed ({randomNumberOfSeconds} secs)" };
+        Console.WriteLine($"Task {task.Id} is completed in {randomNumberOfSeconds}");
+        await _taskHub.Clients.All.SendAsync("ReceiveMessage", finishedUpdate, cancellationToken: stoppingToken);
+      }, stoppingToken);
     }
   }
 }
