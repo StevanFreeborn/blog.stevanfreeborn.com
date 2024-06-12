@@ -249,12 +249,18 @@ At this point we should be able to go to the client and click the button to add 
 
 ### Implement the task queue
 
+So that is cool. We can take a task from the client, send it to the server, and get a response back. But we need to actually do something with that task so it can actually be processed. Let's start by creating a class to represent the task.
+
+We will use something really generic like a `BackgroundTask` class that has an `Id` property that is set to a new guid when the task is created.
+
 ```csharp
 class BackgroundTask
 {
   public string Id { get; set; } = Guid.NewGuid().ToString();
 }
 ```
+
+Now that we can represent these tasks we need to create a queue to persist them while they are waiting to be processed. This in a real world scenario would likely be sorted by some sort of persistent store like RabbitMQ or Azure Service Bus. But for this example we will just use an in-memory queue implemented with a [Channels](https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) and a class called `BackgroundTaskQueue` that we will register as a singleton service.
 
 ```csharp
 class BackgroundTaskQueue
@@ -273,7 +279,11 @@ class BackgroundTaskQueue
 }
 ```
 
+This class has two methods `EnqueueAsync` and `DequeueAsync`. The `EnqueueAsync` method will add a task to the queue and the `DequeueAsync` method will remove a task from the queue. We will be able to consume these methods in the `TaskService` class that we will create next.
+
 ### Implement the task service
+
+We are getting close to having everything wired up. But we are still missing a way to actual process these tasks which we are receiving from the client and sticking in our queue. For this we can create a class called `TaskService` that will be a hosted service that will run in the background and continuously pull tasks out of the queue and process them.
 
 ```csharp
 class TaskService(BackgroundTaskQueue taskQueue) : BackgroundService
@@ -286,18 +296,29 @@ class TaskService(BackgroundTaskQueue taskQueue) : BackgroundService
     {
       var task = await _taskQueue.DequeueAsync(stoppingToken);
 
-      // Execute the task
-      Console.WriteLine($"Task {task.Id} is starting");
-  
-      await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+      _ = Task.Run(async () =>
+      {
+        var startingUpdate = new { task.Id, Status = "Starting" };
+        Console.WriteLine($"Task {task.Id} is starting");
 
-      Console.WriteLine($"Task {task.Id} is complete");
+        var randomNumberOfSeconds = new Random().Next(5, 30);
+        await Task.Delay(TimeSpan.FromSeconds(randomNumberOfSeconds), stoppingToken);
+
+        Console.WriteLine($"Task {task.Id} is completed in {randomNumberOfSeconds}");
+      }, stoppingToken);
     }
   }
 }
 ```
 
+In the service of keeping things super simple in the example we are just going to log the start and stop of the task and simulate some async work with a random delay between 5 and 30 seconds. In a real world scenario you would be doing some actual work here.
+
+> [!NOTE]
+> I am wrapping the processing work in a call to `Task.Run` because in this scenario we are firing and forgetting the task and I don't want to block the background service from processing other tasks. In a real world scenario you would want to be more careful about how you handle exceptions when doing this.
+
 ### Update add task endpoint to add task to queue
+
+Great we got our queue and we've got a service to process that queue, but our tasks aren't actually yet going into the queue even thought they are making it to the server. Let's update the `add-task` endpoint to actually add the task to the queue.
 
 ```csharp
 app
@@ -311,6 +332,16 @@ app
   .WithDisplayName("Add Task")
   .WithDescription("Add a new task to the queue");
 ```
+
+This gets to a full round trip of...
+
+1. Task coming from the client
+2. Task being received by the server
+3. Task being added to the queue
+4. Letting client know the task was added
+5. Task being processed by the service
+
+However we still haven't done anything to address the initial problem of providing feedback to the client about the progress of the task as it is being processed. Let's do that now.
 
 ### Let's add signal r hub
 
