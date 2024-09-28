@@ -33,6 +33,16 @@ jobs:
         run: dotnet restore
       - name: Build project
         run: dotnet build --no-restore
+      - name: Install powershell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https software-properties-common
+          source /etc/os-release
+          wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          rm packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y powershell
       - name: Install playwright dependencies
         shell: pwsh
         run: ./test/Blog.Tests/bin/Debug/net8.0/playwright.ps1 install-deps
