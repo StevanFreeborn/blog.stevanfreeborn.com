@@ -18,5 +18,6 @@
     "default": true,
     "MD041": false,
     "MD048": false,
-  }
+  },
+  "editor.formatOnSave": true,
 }

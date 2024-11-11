@@ -3,7 +3,7 @@
   "title": "Onspring's RefToArray Formula Function Explained: The What, Why, and How",
   "lead": "Learn how to use the RefToArray function in the Onspring formula engine to transform and aggregate data from related records. This guide breaks down how RefToArray works, offers practical use cases, and explains when to leverage it for custom data evaluation. Whether you're handling risk scores, survey responses, or task deadlines, get tips on harnessing RefToArray for data insight and control without giving yourself a headache",
   "isPublished": true,
-  "publishedAt": "2024-11-08",
+  "publishedAt": "2024-11-11",
   "openGraphImage": "posts/onspring-reftoarray-explained/og-image.png",
 }
 ```
@@ -113,3 +113,115 @@ return JSON.stringify(names);
 Again, there is a lot more to learn about arrays, but I hope this gives you a basic understanding of what they are and how they work. If you're interested in learning more, I recommend checking out the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections). This should though give you enough of an understanding to follow how they are used in the context of `RefToArray`.
 
 ## Putting It All Together
+
+Now that we have a basic understanding of reference fields, objects, and arrays, we can start to make sense of `RefToArray`. At its core, `RefToArray` is a function that allows you to transform and aggregate data from related records. It takes two arguments: the first argument is the reference field that links the records together, and the second argument is an object that defines the fields you want to include in the resulting array. Here's an example of how you might use `RefToArray` to get a list of tasks that are linked to a project:
+
+```javascript
+var tasks = RefToArray({:Tasks}, { status: {:item::Status}, dueDate: {:item::Due Date} });
+
+// returns an array of objects like this:
+// [
+//   { status: "In Progress", dueDate: "2024-11-08" },
+//   { status: "Not Started", dueDate: "2024-11-10" },
+// ]
+return JSON.stringify(tasks);
+```
+
+> [!NOTE]
+> The second argument to `RefToArray` is often the most confusing part for folks. I've found the easiest way to conceptualize it is as a template for the objects you want to create from each of the related records in the reference field. The keys in the object are the names of the fields you want to have in the resulting objects and the values are fields from the related records whose values you want to include in the resulting objects.
+
+This makes `RefToArray` primarily a utility function that allows you to cross that boundary between records and data in Onspring and data structures in JavaScript that allows you to manipulate that data in a way you couldn't otherwise.
+
+And remember now that your record data is in an array of objects you can use them in all the ways you would expect to be able to use an array of objects. You can filter them, sort them, map them, reduce them, etc. Which is what is being done in the example at the beginning of this post.
+
+## Cursed with Knowledge
+
+Okay, so now you know what `RefToArray` is and how it works. This is great, but it also can lead you down a dark and dangerous path. You see, now that you know how to use `RefToArray` you might be tempted to use it everywhere. Kind of one of those "when all you have is a hammer, everything looks like a nail" situations. But I'm here to tell you that you should resist that temptation. `RefToArray` is a powerful tool, but it is not always the right tool for the job. In a lot of cases you can get by with simpler formulas that don't require the complexity of `RefToArray`. So let's talk about when you would and wouldn't want to use it.
+
+### Wait, Don't Do That
+
+The most common mistake with `RefToArray` is using it when you don't need to. For example:
+
+- If you only need to access a single fields value from related records
+- If you only need to get the count, average, max, min, or sum of a field from related records
+- If you only need to conditionally count or sum a field from related records
+
+All of these can be done with simpler formulas or built-in functions. For example, if you only need to get the count of related records you can use the `Count` function. If you only need to get the sum of a field from related records you can use the `Sum` function. If you only need to conditionally count or sum a field from related records you can use the `CountIf` or `SumIf` functions. These functions are simpler and more efficient than using `RefToArray` in these cases.
+
+```javascript
+CountIf({:Tasks::Status}!=[:Complete],{:item::Record Id})
+```
+
+> [!NOTE]
+> A lot of time I see folks using `RefToArray` to do conditional aggregations when they need to consider more than one field in the related records. You don't need to though. The trick is to move your conditional logic into a formula field in the related record itself and then use the `SumIf` or `CountIf` functions to aggregate the results. This is a much more efficient way to do it. I've wrote about this approach in more detail [here](/countifs-sumifs-in-onspring).
+
+The other big red-flag usage of `RefToArray` is when you are working with a large number of related records. `RefToArray` can be slow when working with a large number of records because it has to fetch all of the related records, load them into memory, and transform them into an array of objects so that you can work with them in your formula. Then the formula engine has to actually run your formula to perform the operations you want to do which may or may not involve things that are computationally expensive. Therefore I think it is best to avoid using `RefToArray` in these cases and if you absolutely have to you should give some thought to how you can optimize your formula to make it efficient - which is a whole other post in itself.
+
+## A Perfect Fit
+
+You are excited to use `RefToArray` now, right? Especially after I've provided such a wonderful cautionary tale. 😅
+
+Jokes aside though there are most definitely times at which you can't avoid it or it is actually the best tool for the job. I doubt I'll be able to cover all the concrete use cases where `RefToArray` is the right choice, but I can give you a pattern you can look for that might indicate that you've wondered into `RefToArray` territory. This is a pattern that I've seen in my own work and in the work of others that I think is a good indicator that you probably will need to use `RefToArray`.
+
+### Siblings Need To Know About Each Other
+
+Most commonly I've found that `RefToArray` comes up when the answer to the question you need your formula field to answer requires that each of your related records know about each other. This is a bit of a weird concept to wrap your head around at first. Intuitively you might think "what do you mean they need to know about each other? They're related to the same record, of course they know about each other." But that isn't the case. Each of the related records isn't aware of the other unless they are evaluated in the context of their parent record in the same formula field.
+
+For example, let's say you have a Tasks app and a Projects app. Each task is linked to a project and from the project perspective you want to know the next upcoming due date of all the tasks. This requires that the tasks know about each other so that we can compare their due dates, filter out any task that are not after the current date, and then sort them to find the next upcoming due date. Something like this:
+
+```javascript
+// create an array of tasks
+// with their date values.
+// i.e. 
+// [
+//   { date: 6/23/2023 },
+//   { date: 8/3/2023 },
+//   { date: 12/15/2023 },
+//   { date: 1/8/2024 },
+//   { date: 3/23/2024 }
+// ]
+var tasks = RefToArray(
+  {:Tasks}, 
+  { date: {:item::Due Date} }
+);
+
+// filter out any tasks whose 
+// dates are before or on today
+// i.e. will return:
+// [
+//   { date: 1/8/2024 },
+//   { date: 3/23/2024 }
+// ]
+var filtered = tasks.filter(function (p) {
+  return IsAfterToday(new Date(p.date));
+});
+
+// if there are no tasks
+// for us to consider return null.
+if (filtered.length == 0) {
+  return null;
+}
+
+// sort dates in ascending order
+// according to their value in milliseconds
+// i.e. will return:
+// [
+//   { date: 1/8/2024 },
+//   { date: 3/23/2024 }
+// ]
+var sorted = filtered
+  .slice()
+  .sort(function (a,b) {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+
+// return date of first task in sorted
+// array
+// i.e. if today's date is 12/22/2023 it will return
+// 1/8/2023
+return Object(sorted[0]).date;
+```
+
+Again that is definitely a "for instance" example and not an exhaustive list of all the times you might need to use `RefToArray`. But it illustrates the point that if you find yourself in a situation where you are needing to perform some sort of aggregation or manipulation that requires related record A to consider and know about related record B then you are probably going to have to become familiar with `RefToArray`.
+
+## Conclusion

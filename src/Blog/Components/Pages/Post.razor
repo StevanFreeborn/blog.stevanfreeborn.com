@@ -17,12 +17,7 @@ else
 
   <HeadContent>
     <meta name="description" content="@description">
-    <OpenGraph 
-      PageTitle="@title" 
-      Description="@description" 
-      Type="article"
-      Image="@BlogPost.OpenGraphImage"
-    />
+    <OpenGraph PageTitle="@title" Description="@description" Type="article" Image="@BlogPost.OpenGraphImage" />
     <link rel="stylesheet" href="markdown.css">
     <link rel="stylesheet" href="prism.css">
   </HeadContent>
@@ -40,9 +35,9 @@ else
   <PageScript Src="./Components/Pages/Post.razor.js" />
 }
 
-@code 
+@code
 {
-  [Parameter] 
+  [Parameter]
   public string Slug { get; set; } = string.Empty;
   private PostWithContent? BlogPost;
 
