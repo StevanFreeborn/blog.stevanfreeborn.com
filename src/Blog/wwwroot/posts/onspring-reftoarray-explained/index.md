@@ -225,3 +225,5 @@ return Object(sorted[0]).date;
 Again that is definitely a "for instance" example and not an exhaustive list of all the times you might need to use `RefToArray`. But it illustrates the point that if you find yourself in a situation where you are needing to perform some sort of aggregation or manipulation that requires related record A to consider and know about related record B then you are probably going to have to become familiar with `RefToArray`.
 
 ## Conclusion
+
+I hope this post has helped you understand what `RefToArray` is and how it works. It can be a powerful tool in your formula toolbox, but it is not always the right tool for the job. You should use it judiciously and consider simpler alternatives when possible. When you do need to use `RefToArray`, make sure you have a good understanding of reference fields, objects, and arrays so that you can work with the data effectively. And remember, if you are dealing with large numbers of related records you should prioritize optimizing your formula and remain aware of the performance challenges you may face.
