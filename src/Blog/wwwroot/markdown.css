@@ -1,4 +1,5 @@
 @media (prefers-color-scheme: dark) {
+
   .markdown-body,
   [data-theme="dark"] {
     /*dark*/
@@ -40,14 +41,14 @@
     --color-canvas-subtle: #161b22;
     --color-border-default: #30363d;
     --color-border-muted: #21262d;
-    --color-neutral-muted: rgba(110,118,129,0.4);
+    --color-neutral-muted: rgba(110, 118, 129, 0.4);
     --color-accent-fg: #2f81f7;
     --color-accent-emphasis: #1f6feb;
     --color-success-fg: #3fb950;
     --color-success-emphasis: #238636;
     --color-attention-fg: #d29922;
     --color-attention-emphasis: #9e6a03;
-    --color-attention-subtle: rgba(187,128,9,0.15);
+    --color-attention-subtle: rgba(187, 128, 9, 0.15);
     --color-danger-fg: #f85149;
     --color-danger-emphasis: #da3633;
     --color-done-fg: #a371f7;
@@ -56,6 +57,7 @@
 }
 
 @media (prefers-color-scheme: light) {
+
   .markdown-body,
   [data-theme="light"] {
     /*light*/
@@ -96,8 +98,8 @@
     --color-canvas-default: #ffffff;
     --color-canvas-subtle: #f6f8fa;
     --color-border-default: #d0d7de;
-    --color-border-muted: hsla(210,18%,87%,1);
-    --color-neutral-muted: rgba(175,184,193,0.2);
+    --color-border-muted: hsla(210, 18%, 87%, 1);
+    --color-neutral-muted: rgba(175, 184, 193, 0.2);
     --color-accent-fg: #0969da;
     --color-accent-emphasis: #0969da;
     --color-success-fg: #1a7f37;
@@ -208,7 +210,8 @@
   top: -0.5em;
 }
 
-.markdown-body img {
+.markdown-body img,
+.markdown-body video {
   border-radius: 0.5rem;
   border-style: none;
   max-width: 100%;
@@ -363,7 +366,7 @@
 .markdown-body kbd {
   display: inline-block;
   padding: 3px 5px;
-  font: 11px ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  font: 11px ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   line-height: 10px;
   color: var(--color-fg-default);
   vertical-align: middle;
@@ -453,14 +456,14 @@
 .markdown-body tt,
 .markdown-body code,
 .markdown-body samp {
-  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   font-size: 12px;
 }
 
 .markdown-body pre {
   margin-top: 0;
   margin-bottom: 16px;
-  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   font-size: 12px;
   word-wrap: normal;
 }
@@ -1069,7 +1072,7 @@
 .markdown-body g-emoji {
   display: inline-block;
   min-width: 1ch;
-  font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 1em;
   font-style: normal !important;
   font-weight: var(--base-text-weight-normal, 400);
