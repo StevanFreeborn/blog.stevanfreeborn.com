@@ -77,7 +77,7 @@ Before we jump into Onspring, let's gather all the pieces of information you'll 
 - Your `Azure Tenant Id` (find this on the Overview page)
 - The `Id` or `Unique Principal Name` of the user you want to create events for (you can find this in the Azure Portal under Users)
 
-<video src="posts/how-to-automate-creating-microsoft-calendar-events-using-onspring/collect-important-info.mp4" controls title="Collect Important Info"></video>
+<video src="https://share.stevanfreeborn.com/blog.stevanfreeborn.com/how-to-automate-creating-microsoft-calendar-events-using-onspring/collect-important-info.mp4" controls title="Collect Important Info"></video>
 
 ### The Fun Part - Setting Up Onspring
 
