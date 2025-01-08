@@ -13,7 +13,7 @@ Over the last couple of weeks, I took some time off for the holidays. During the
 >[!NOTE]
 > You can find the code for the prototype [here](https://github.com/StevanFreeborn/eval-lab). I'm not sure how far I'll take this project, but maybe it will be useful for you in your work.
 
-## A New Territory Between Development and Testing
+## A New Category of Work
 
 As software professionals, we're familiar with the traditional boundaries between development and testing. Development typically involves writing code to implement features, while testing focuses on identifying bugs and ensuring requirements are met. However, working with generative AI systems introduces a bunch of new work that doesn't really fit with either of these labels.
 
