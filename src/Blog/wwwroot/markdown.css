@@ -212,6 +212,8 @@
 
 .markdown-body img,
 .markdown-body video {
+  display: block;
+  margin: 0 auto;
   border-radius: 0.5rem;
   border-style: none;
   max-width: 100%;
