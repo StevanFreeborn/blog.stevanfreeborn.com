@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS setup-stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS setup-stage
 WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
@@ -13,7 +13,7 @@ CMD ["dotnet", "watch"]
 FROM setup-stage as build-stage
 RUN dotnet publish -c Release -o dist
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS production-stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS production-stage
 WORKDIR /app
 COPY --from=build-stage /app/dist ./
 ENTRYPOINT ["dotnet", "Blog.dll"]
