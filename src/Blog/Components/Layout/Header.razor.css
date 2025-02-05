@@ -5,9 +5,24 @@
   width: 100%;
   gap: 1rem;
 
+  & .title-container {
+    position: relative;
+  }
+
   & .title-container h1 {
     font-size: 1.5rem;
     font-weight: 700;
+  }
+
+  & .title-container p {
+    position: absolute;
+    bottom: -0.40rem;
+    right: 0;
+    font-size: 0.65rem;
+
+    & a:hover {
+      text-decoration: underline;
+    }
   }
 
   & .author-container {
