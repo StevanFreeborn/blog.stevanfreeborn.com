@@ -20,7 +20,7 @@
       transition-timing-function: ease-in-out;
 
       & h3 {
-        background: linear-gradient(to right top, #db3e3e, #df3741, #e32e44, #e72347, #eb124b);
+        background: linear-gradient(90deg, #512bd4, #689eff);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
