@@ -1,8 +1,9 @@
 ```json meta
 {
   "title": "Building a Background Removal App with Machine Learning and .NET",
-  "lead": "Learn how to create a powerful background removal app using machine learning models and a .NET console application. This step-by-step guide covers everything from model integration to deployment, perfect for developers looking to enhance their skills in AI and .NET.", "isPublished": true,
-  "publishedAt": "2025-02-05",
+  "lead": "Learn how to create a powerful background removal app using machine learning models and a .NET console application. This step-by-step guide covers everything from model integration to deployment, perfect for developers looking to enhance their skills in AI and .NET.", 
+  "isPublished": true,
+  "publishedAt": "2025-02-14",
   "openGraphImage": "posts/building-a-background-removal-app-with-machine-learning-and-dotnet/og-image.png",
 }
 ```
@@ -10,7 +11,7 @@
 I've been using [Canva](https://www.canva.com/) for a few years now when I want to create images for content I'm sharing or posting online. The UI is great and they offer a lot of templates for all the different sizes that platforms prefer. It'd been a bit though since I'd used it heavily so when I picked it back up this past month to create thumbnails for the videos I've been posting on my [YouTube channel](https://www.youtube.com/@stevanfreeborn) they offered me a free trial of their premium service. I've been using it for the last couple weeks and really the main feature included in their premium service I've been using is their background removal. I know how to do background removal in Photoshop and GIMP, but Canva's makes it so easy and fast with just a click of a button. However with the trial expiring I just can't justify another subscription for a single feature. That is when the engineer in me kicked in and I thought, "Surely I can figure out how to do this myself." So here we are. 😅
 
 >[!NOTE]
->The code presented in this post reflects the initial pass I took at building this app. I have since iterated it a bit and turned it into a proper app. You can find the code for it [here]() and you can download a single file executable for it [here](). However there is a branch of the code that reflects the code presented in this post [here]().
+>The code presented in this post reflects the initial pass I took at building this app. I have since iterated it a bit and turned it into a proper app. You can find the code for it [here](https://github.com/StevanFreeborn/bgr) and you can download the app [here](https://github.com/StevanFreeborn/bgr/releases). However there is a branch of the code that reflects the code presented in this post [here](https://github.com/StevanFreeborn/bgr/tree/blog-reference).
 
 ## Where to Start
 
