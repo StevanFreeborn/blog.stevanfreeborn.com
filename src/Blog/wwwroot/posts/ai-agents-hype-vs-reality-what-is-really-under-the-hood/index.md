@@ -90,14 +90,28 @@ The danger lies in letting the label obscure the current reality:
 
 Instead of getting caught up in whether something qualifies as a "true agent," the focus should be on the engineering principles that make these systems effective:
 
-- Masterful Prompt Engineering: Designing clear, robust prompts that effectively guide the LLM.
-- Thoughtful Tool Design: Creating reliable, specific, and well-documented tools/APIs for the LLM to use.
-- Robust Orchestration: Building resilient execution loops with proper state management, error handling, and potentially fallback mechanisms.
-- Strategic LLM Selection: Choosing the right model for the specific task's complexity, reasoning, and tool-use needs.
-- Rigorous Testing and Evaluation: Continuously testing the agent's performance on realistic tasks to understand its capabilities and failure points.
+- Masterful Prompt Engineering:
+  
+  Designing clear, robust prompts that effectively guide the LLM.
+
+- Thoughtful Tool Design: 
+  
+  Creating reliable, specific, and well-documented tools/APIs for the LLM to use.
+
+- Robust Orchestration: 
+
+  Building resilient execution loops with proper state management, error handling, and potentially fallback mechanisms.
+
+- Strategic LLM Selection: 
+
+  Choosing the right model for the specific task's complexity, reasoning, and tool-use needs.
+
+- Rigorous Testing and Evaluation: 
+
+  Continuously testing the agent's performance on realistic tasks to understand its capabilities and failure points.
 
 ## Conclusion: A Powerful Pattern, Not Magic (Yet)
 
-AI agents, as they exist today, represent an incredibly useful design pattern for leveraging LLMs. They enable us to build applications that go far beyond simple Q&A, tackling complex, multi-step tasks that require interaction with external systems. They are a testament to the power of LLMs combined with clever software engineering.
+AI agents, as they exist today, represent a useful design pattern for leveraging LLMs. They enable us to build applications that go beyond simple Q&A, tackling complex, multi-step tasks that require interaction with external systems. They are a testament to the power of LLMs combined with clever software engineering.
 
-However, they aren't magic. They are complex systems built on specific components: the LLM, the prompts, the tools, and the orchestration code. At the end of the day, much of it still comes down to making using LLM generated inputs to call deterministic code and managing the state of an ongoing conversation. Understanding this reality helps us build better, more reliable systems and set realistic expectations.
+However, they aren't magic. They are complex systems built on specific components: the LLM, the prompts, the tools, and the orchestration code. At the end of the day, much of it still comes down to using LLM generated inputs to call deterministic code and managing the state of an ongoing conversation.
