@@ -3,7 +3,7 @@
   "title": "How Building A Discord Bot Made Me A Better Developer",
   "lead": "Some practical lessons I picked up while wrestling with WebSockets, concurrency, and Discord's Gateway API",
   "isPublished": true,
-  "publishedAt": "2025-06-17",
+  "publishedAt": "2025-06-20",
   "openGraphImage": "posts/how-building-a-discord-bot-made-me-a-better-developer/og-image.png"
 }
 ```
@@ -15,6 +15,9 @@ Spoiler alert: it wasn't.
 What I thought would be straightforward turned into a crash course in building resilient network clients. By the time I had a working `DiscordGatewayClient` that could stay connected reliably, I'd learned a bunch of things that made me a better developer.
 
 Here's what building this bot taught me. I am hoping maybe some of it will be useful for your projects too.
+
+> [!NOTE]
+> The complete source for the bot is available on [GitHub](https://github.com/StevanFreeborn/steves-bot) if you want to see how it all fits together. You can also find more details on Discord's [Gateway documentation](https://discord.com/developers/docs/events/gateway) if you want to understand the protocol better.
 
 ## Abstractions Are Worth The Extra Work
 
@@ -97,4 +100,125 @@ This dual-token approach lets me handle two types of cancellation: external (whe
 
 ## Error Handling Is Where The Magic Happens
 
+My initial implementation worked great when everything went perfectly. Then I deployed it and discovered that networks are unreliable, messages sometimes get corrupted, and connections drop at inconvenient times.
 
+This forced me to think about what happens when things go wrong:
+
+```csharp
+try
+{
+  e = await JsonSerializer.DeserializeAsync<DiscordEvent>(
+    memoryStream,
+    _jsonSerializerOptions,
+    _linkedReceiveMessageCts.Token
+  );
+}
+catch (JsonException ex)
+{
+  _logger.LogError(ex, "Failed to deserialize message: {Message}", msgFromMemoryStream);
+  _logger.LogDebug("Message from StringBuilder: {Message}", msgFromStringBuilder);
+}
+
+if (e is null)
+{
+  _logger.LogInformation("Received null event.");
+  continue; // Keep processing other messages
+}
+```
+
+Instead of crashing when Discord sends malformed JSON (which does happen occasionally), the client logs the issue and keeps running.
+
+The reconnection logic also had to be pretty careful about cleanup:
+
+```csharp
+private async Task ReconnectAsync(CancellationToken cancellationToken)
+{
+  // Cancel background tasks first
+  await CancelHeartbeatTaskAsync(cancellationToken);
+  await CancelReceiveMessagesTaskAsync(cancellationToken);
+    
+  // Reset state
+  await SetHeartbeatSentAsync(DateTimeOffset.MinValue, cancellationToken);
+  await SetHeartbeatAcknowledgedAsync(DateTimeOffset.MinValue, cancellationToken);
+
+  // Close connection properly
+  var closeStatus = _canResume ? WebSocketCloseStatus.MandatoryExtension : WebSocketCloseStatus.NormalClosure;
+  await CloseIfOpenAsync(closeStatus, "Reconnecting", cancellationToken);
+    
+  _webSocket?.Dispose();
+
+  // Decide whether to resume or start fresh
+  if (_canResume)
+  {
+    await SetWebSocketAsync(_webSocketFactory.Create(), cancellationToken);
+    await ConnectWithResumeUrlAsync(cancellationToken);
+    await StartReceiveMessagesAsync(cancellationToken);
+    return;
+  }
+
+  await ConnectAsync(cancellationToken);
+}
+```
+
+Every reconnection needs careful orchestration: cancel tasks, reset state, close connections, dispose resources, then decide whether to resume or restart.
+
+Implementing features is fun, but most apps are really defined by how they handle errors and edge cases.
+
+## Resource Management Matters Even More In Long-Running Apps
+
+Discord bots typically run 24/7, which means resource leaks that might not matter in short-lived applications become real problems.
+
+I had to be careful about disposing everything properly:
+
+```csharp
+public void Dispose()
+{
+  _heartbeatCts?.Dispose();
+  _linkedHeartbeatCts?.Dispose();
+
+  _receiveMessageCts?.Dispose();
+  _linkedReceiveMessageCts?.Dispose();
+
+  _webSocket?.Dispose();
+  _lock.Dispose();
+}
+```
+
+But disposal alone isn't enough. I also needed to make sure scoped resources were cleaned up promptly:
+
+```csharp
+if (_eventHandlers.TryGetValue(eventType, out var handler))
+{
+  try
+  {
+    await using var scope = _serviceScopeFactory.CreateAsyncScope();
+    await handler(de, scope.ServiceProvider, cancellationToken);
+  }
+  catch (Exception ex)
+  {
+    _logger.LogError(ex, "Error handling event: {Event}", eventType);
+  }
+}
+```
+
+The await using ensures that any dependencies resolved for event handling get disposed immediately, not whenever the garbage collector gets around to it.
+
+In long-running applications, every IDisposable object and every background task is a potential resource leak.
+
+## What I'd Do Differently
+
+Looking back, there are a few things I might approach differently:
+
+The numerous `SetXAsync` methods for state management work but create a lot of boilerplate. A more sophisticated state management approach might reduce the repetition.
+
+Some values like buffer sizes and timeouts are hardcoded when they probably should be configurable.
+
+But overall, the patterns I learned here—abstractions for testability, careful synchronization, defensive error handling, and proper resource management—have been useful in other projects too.
+
+## Conclusion
+
+Building this Discord bot wasn't earth-shattering, but it was a good reminder that even seemingly simple projects can teach you things. Working with real-time connections, managing concurrent operations, and integrating with complex APIs forces you to think about problems you might not encounter in typical CRUD applications.
+
+If you're looking for a side project that will stretch your skills a bit, I'd recommend building something that involves persistent connections or real-time communication. The problems you'll run into like handling failures gracefully, managing state across concurrent operations, and working with finicky protocols are pretty transferable to other kinds of systems.
+
+Plus, you'll end up with a working Discord bot, which is pretty satisfying.
