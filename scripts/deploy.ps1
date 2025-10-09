@@ -1,15 +1,21 @@
-$NGINX_CONFIG_PATH = "/etc/nginx/sites-available/blog.stevanfreeborn.com"
+$NGINX_CONFIG_PATHS = @(
+  "/etc/nginx/sites-available/blog.stevanfreeborn.com",
+  "/etc/nginx/sites-available/blog.steva.nz"
+)
+$BLUE_PORT = 5001
+$GREEN_PORT = 5002
 
 function StartContainer 
 {
   param (
     [string]$containerColor,
-    [string]$dockerTag
+    [string]$dockerTag,
+    [int]$hostPort
   )
 
   $containerName = "blog.stevanfreeborn.com.$containerColor"
   $postDirEnv = "FilePostServiceOptions__PostsDirectory=wwwroot/posts"
-  $containerId = docker run -d --restart always -p 8080 --name $containerName --env $postDirEnv $dockerTag
+  docker run -d --restart always -p "${hostPort}:8080" --name $containerName --env $postDirEnv $dockerTag | Out-Null
 
   if ($LASTEXITCODE -ne 0) 
   {
@@ -17,7 +23,6 @@ function StartContainer
     exit 1;
   }
 
-  $containerHostPort = $(docker port $containerId).Split(":")[1]
   $running = $false
   $attemptLimit = 12
   $attempts = 0
@@ -27,7 +32,7 @@ function StartContainer
   {
     try 
     {
-      $response = Invoke-WebRequest -Uri "http://localhost:$containerHostPort/rss" -UseBasicParsing
+      $response = Invoke-WebRequest -Uri "http://localhost:$hostPort/rss" -UseBasicParsing
     
       if ($response.StatusCode -eq 200) 
       {
@@ -53,8 +58,6 @@ function StartContainer
     Write-Host "Failed to start $containerName container."
     exit 1
   }
-
-  return $containerHostPort
 }
 
 function UpdateNginxConfig 
@@ -70,9 +73,11 @@ function UpdateNginxConfig
 
   $modifiedContent = @()
 
-  foreach ($line in $nginxConfig) {
-    if ($line -match $pattern) {
-        $line = $line -replace $pattern, $replacement
+  foreach ($line in $nginxConfig)
+  {
+    if ($line -match $pattern)
+    {
+      $line = $line -replace $pattern, $replacement
     }
 
     $modifiedContent += $line
@@ -99,10 +104,13 @@ if ($null -eq $dockerVersion)
   exit 1
 }
 
-if (-not (Test-Path $NGINX_CONFIG_PATH)) 
+foreach ($configPath in $NGINX_CONFIG_PATHS)
 {
-  Write-Host "Nginx configuration file not found: $NGINX_CONFIG_PATH"
-  exit 1
+  if (-not (Test-Path $configPath)) 
+  {
+    Write-Host "Nginx configuration file not found: $configPath"
+    exit 1
+  }
 }
 
 # attempt to pull docker image
@@ -115,27 +123,43 @@ if ($LASTEXITCODE -ne 0)
   exit 1
 }
 
-# Checkif green container is running
+# Check if blue container is running
 $blueContainerId = docker ps --filter "name=blog.stevanfreeborn.com.blue" --format "{{.ID}}"
 
 if ($null -eq $blueContainerId) 
 {
   Write-Host "Blue container is not running. Starting blue container."
 
-  $blueContainerHostPort = StartContainer -containerColor "blue" -dockerTag $dockerTag
+  StartContainer -containerColor "blue" -dockerTag $dockerTag -hostPort $BLUE_PORT
 
   Write-Host "Blue container is running."
   
-  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $blueContainerHostPort
+  # Backup original configs before making changes
+  $configBackups = @{}
 
-  Write-Host "Nginx configuration updated to point to blue container on port $blueContainerHostPort."
+  foreach ($configPath in $NGINX_CONFIG_PATHS)
+  {
+    $configBackups[$configPath] = Get-Content $configPath
+  }
+
+  foreach ($configPath in $NGINX_CONFIG_PATHS)
+  {
+    UpdateNginxConfig -filePath $configPath -portNumber $BLUE_PORT
+    Write-Host "Nginx configuration updated: $configPath to point to blue container on port $BLUE_PORT."
+  }
+
+  Write-Host "All Nginx configurations updated to point to blue container on port $BLUE_PORT."
 
   nginx -t
 
   if ($LASTEXITCODE -ne 0) 
   {
     Write-Host "Nginx configuration test failed. Reverting changes."
-    Set-Content -Path $filePath -Value $nginxConfig
+    foreach ($configPath in $NGINX_CONFIG_PATHS)
+    {
+      Set-Content -Path $configPath -Value $configBackups[$configPath]
+      Write-Host "Reverted: $configPath"
+    }
     exit 1
   }
 
@@ -154,20 +178,36 @@ else
 {
   Write-Host "Blue container is running. Starting green container."
 
-  $greenContainerHostPort = StartContainer -containerColor "green" -dockerTag $dockerTag
+  StartContainer -containerColor "green" -dockerTag $dockerTag -hostPort $GREEN_PORT
 
   Write-Host "Green container is running."
 
-  UpdateNginxConfig -filePath $NGINX_CONFIG_PATH -portNumber $greenContainerHostPort
+  # Backup original configs before making changes
+  $configBackups = @{}
 
-  Write-Host "Nginx configuration updated to point to green container on port $greenContainerHostPort."
+  foreach ($configPath in $NGINX_CONFIG_PATHS)
+  {
+    $configBackups[$configPath] = Get-Content $configPath
+  }
+
+  foreach ($configPath in $NGINX_CONFIG_PATHS)
+  {
+    UpdateNginxConfig -filePath $configPath -portNumber $GREEN_PORT
+    Write-Host "Nginx configuration updated: $configPath to point to green container on port $GREEN_PORT."
+  }
+
+  Write-Host "All Nginx configurations updated to point to green container on port $GREEN_PORT."
 
   nginx -t
 
   if ($LASTEXITCODE -ne 0) 
   {
     Write-Host "Nginx configuration test failed. Reverting changes."
-    Set-Content -Path $filePath -Value $nginxConfig
+    foreach ($configPath in $NGINX_CONFIG_PATHS)
+    {
+      Set-Content -Path $configPath -Value $configBackups[$configPath]
+      Write-Host "Reverted: $configPath"
+    }
     exit 1
   }
 
