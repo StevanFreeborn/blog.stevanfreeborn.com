@@ -1,6 +1,6 @@
-@inherits Bunit.TestContext
+@inherits Bunit.BunitContext
 
-@code 
+@code
 {
   private Mock<IPostService> _postServiceMock = new();
 
@@ -8,10 +8,10 @@
   public void Feed_WhenRendedAndNoPosts_ItShouldRenderNoPostsMessage()
   {
     _postServiceMock
-      .Setup(x => x.GetPostsAsync())
-      .ReturnsAsync(new List<Post>());
+    .Setup(x => x.GetPostsAsync())
+    .ReturnsAsync(new List<Post>());
 
-    var ctx = new TestContext();
+    var ctx = new BunitContext();
 
     ctx.Services.AddSingleton(_postServiceMock.Object);
 
@@ -24,15 +24,15 @@
   public void Feed_WhenRendedAndPosts_ItShouldRenderPosts()
   {
     List<Post> posts = [
-      new Post() { Title = "Post 1", },
-      new Post() { Title = "Post 2", },
-    ];
+    new Post() { Title = "Post 1", },
+new Post() { Title = "Post 2", },
+];
 
     _postServiceMock
-      .Setup(x => x.GetPostsAsync())
-      .ReturnsAsync(posts);
+    .Setup(x => x.GetPostsAsync())
+    .ReturnsAsync(posts);
 
-    var ctx = new TestContext();
+    var ctx = new BunitContext();
 
     ctx.Services.AddScoped(_ => _postServiceMock.Object);
 

@@ -31,18 +31,6 @@
         referrerpolicy="no-referrer-when-downgrade" /></noscript>
   }
   <script src="_framework/blazor.web.js"></script>
-  <script>
-    // NOTE: This is a workaround for the issue with FocusOnNavigate in Blazor
-    // not playing nicely with static site generation.
-    // read more here: https://github.com/dotnet/aspnetcore/issues/52412
-    window.Blazor.addEventListener("enhancedload", () => {
-      if (window.location.pathname === "/") {
-        return;
-      }
-
-      window.scroll({ top: 0, left: 0, behavior: 'instant' });
-    });
-  </script>
 </body>
 
 </html>

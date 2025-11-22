@@ -1,7 +1,7 @@
 namespace Blog.Tests.EndToEnd;
 
 [TestFixture]
-public class BlogTest : PageTest
+public abstract class BlogTest : PageTest
 {
   private readonly BlogHostFactory<Program> _factory = new();
 
