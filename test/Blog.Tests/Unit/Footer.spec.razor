@@ -1,11 +1,11 @@
-@inherits Bunit.TestContext
+@inherits Bunit.BunitContext
 
-@code 
+@code
 {
   [Test]
   public void Footer_WhenRendered_ItShouldRenderFooterWithNavLinks()
   {
-    var ctx = new TestContext();
+    var ctx = new BunitContext();
 
     var cut = ctx.Render(@<Footer />);
 
