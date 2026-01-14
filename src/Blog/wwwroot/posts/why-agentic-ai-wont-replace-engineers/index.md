@@ -4,7 +4,7 @@
   "lead": "My thoughts on the rise of agentic AI and why I believe it won't be replacing engineers due to fundamental issues with the math, economics, and liability of such systems.",
   "isPublished": true,
   "publishedAt": "2026-01-13",
-  "openGraphImage": "posts/why-ai-wont-replace-engineers/og-image.png"
+  "openGraphImage": "posts/why-agentic-ai-wont-replace-engineers/og-image.png"
 }
 ```
 
