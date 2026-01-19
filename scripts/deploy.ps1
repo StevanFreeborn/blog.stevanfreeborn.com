@@ -86,7 +86,6 @@ function UpdateNginxConfig
   Set-Content -Path $filePath -Value $modifiedContent
 }
 
-# Get the version number from the command line
 $version = $args[0];
 
 if ($null -eq $version) 
@@ -95,10 +94,7 @@ if ($null -eq $version)
   exit 1
 }
 
-# check if docker is installed
-$dockerVersion = docker --version
-
-if ($null -eq $dockerVersion) 
+if (-not (Get-Command docker -ErrorAction SilentlyContinue)) 
 {
   Write-Host "Docker is not installed. Please install Docker and try again."
   exit 1
@@ -113,7 +109,6 @@ foreach ($configPath in $NGINX_CONFIG_PATHS)
   }
 }
 
-# attempt to pull docker image
 $dockerTag = "stevanfreeborn/blog.stevanfreeborn.com:$version"
 docker pull $dockerTag
 
@@ -123,135 +118,75 @@ if ($LASTEXITCODE -ne 0)
   exit 1
 }
 
-# Check if blue container is running
 $blueContainerId = docker ps --filter "name=blog.stevanfreeborn.com.blue" --format "{{.ID}}"
+$greenContainerId = docker ps --filter "name=blog.stevanfreeborn.com.green" --format "{{.ID}}"
 
-if ($null -eq $blueContainerId) 
+if ($null -ne $blueContainerId) 
 {
-  Write-Host "Blue container is not running. Starting blue container."
-
-  StartContainer -containerColor "blue" -dockerTag $dockerTag -hostPort $BLUE_PORT
-
-  Write-Host "Blue container is running."
-  
-  # Backup original configs before making changes
-  $configBackups = @{}
-
-  foreach ($configPath in $NGINX_CONFIG_PATHS)
-  {
-    $configBackups[$configPath] = Get-Content $configPath
-  }
-
-  foreach ($configPath in $NGINX_CONFIG_PATHS)
-  {
-    UpdateNginxConfig -filePath $configPath -portNumber $BLUE_PORT
-    Write-Host "Nginx configuration updated: $configPath to point to blue container on port $BLUE_PORT."
-  }
-
-  Write-Host "All Nginx configurations updated to point to blue container on port $BLUE_PORT."
-
-  nginx -t
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Nginx configuration test failed. Reverting changes."
-    foreach ($configPath in $NGINX_CONFIG_PATHS)
-    {
-      Set-Content -Path $configPath -Value $configBackups[$configPath]
-      Write-Host "Reverted: $configPath"
-    }
-    exit 1
-  }
-
-  nginx -s reload
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to reload Nginx."
-    exit 1
-  }
-
-  Write-Host "Nginx reloaded. Successfully deployed version $version."
-  exit 0
+  $targetColor = "green"
+  $targetPort = $GREEN_PORT
+  $oldContainerId = $blueContainerId
+  $oldColor = "blue"
 }
 else 
 {
-  Write-Host "Blue container is running. Starting green container."
-
-  StartContainer -containerColor "green" -dockerTag $dockerTag -hostPort $GREEN_PORT
-
-  Write-Host "Green container is running."
-
-  # Backup original configs before making changes
-  $configBackups = @{}
-
-  foreach ($configPath in $NGINX_CONFIG_PATHS)
-  {
-    $configBackups[$configPath] = Get-Content $configPath
-  }
-
-  foreach ($configPath in $NGINX_CONFIG_PATHS)
-  {
-    UpdateNginxConfig -filePath $configPath -portNumber $GREEN_PORT
-    Write-Host "Nginx configuration updated: $configPath to point to green container on port $GREEN_PORT."
-  }
-
-  Write-Host "All Nginx configurations updated to point to green container on port $GREEN_PORT."
-
-  nginx -t
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Nginx configuration test failed. Reverting changes."
-    foreach ($configPath in $NGINX_CONFIG_PATHS)
-    {
-      Set-Content -Path $configPath -Value $configBackups[$configPath]
-      Write-Host "Reverted: $configPath"
-    }
-    exit 1
-  }
-
-  nginx -s reload
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to reload Nginx."
-    exit 1
-  }
-
-  Write-Host "Nginx reloaded. Successfully deployed version $version."
-
-  Write-Host "Stopping and removing blue container."
-  
-  docker stop $blueContainerId
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to stop blue container."
-    exit 1
-  }
-
-  docker rm $blueContainerId
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to remove blue container."
-    exit 1
-  }
-
-  Write-Host "Blue container stopped and removed."
-
-  Write-Host "Switching green container to blue container."
-
-  docker rename "blog.stevanfreeborn.com.green" "blog.stevanfreeborn.com.blue"
-
-  if ($LASTEXITCODE -ne 0) 
-  {
-    Write-Host "Failed to rename green container to blue container."
-    exit 1
-  }
-
-  Write-Host "Successfully deployed version $version."
-
-  exit 0
+  $targetColor = "blue"
+  $targetPort = $BLUE_PORT
+  $oldContainerId = $greenContainerId
+  $oldColor = "green"
 }
+
+Write-Host "Deploying to $targetColor container on port $targetPort."
+
+StartContainer -containerColor $targetColor -dockerTag $dockerTag -hostPort $targetPort
+
+Write-Host "$targetColor container is running."
+
+$configBackups = @{}
+
+foreach ($configPath in $NGINX_CONFIG_PATHS)
+{
+  $configBackups[$configPath] = Get-Content $configPath
+}
+
+foreach ($configPath in $NGINX_CONFIG_PATHS)
+{
+  UpdateNginxConfig -filePath $configPath -portNumber $targetPort
+  Write-Host "Nginx configuration updated: $configPath to point to $targetColor container on port $targetPort."
+}
+
+nginx -t
+
+if ($LASTEXITCODE -ne 0) 
+{
+  Write-Host "Nginx configuration test failed. Reverting changes."
+  
+  foreach ($configPath in $NGINX_CONFIG_PATHS)
+  {
+    Set-Content -Path $configPath -Value $configBackups[$configPath]
+  }
+
+  exit 1
+}
+
+nginx -s reload
+
+if ($LASTEXITCODE -ne 0) 
+{
+  Write-Host "Failed to reload Nginx."
+  exit 1
+}
+
+Write-Host "Nginx reloaded. Successfully deployed version $version."
+
+if ($null -ne $oldContainerId) 
+{
+  Write-Host "Stopping and removing $oldColor container."
+
+  docker stop $oldContainerId
+  docker rm $oldContainerId
+
+  Write-Host "$oldColor container stopped and removed."
+}
+
+exit 0
