@@ -4,13 +4,13 @@ COPY *.csproj ./
 RUN dotnet restore
 COPY . .
 
-FROM setup-stage as development-stage
+FROM setup-stage AS development-stage
 RUN apt-get update
 RUN apt-get install -y unzip
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
 CMD ["dotnet", "watch"]
 
-FROM setup-stage as build-stage
+FROM setup-stage AS build-stage
 RUN dotnet publish -c Release -o dist
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS production-stage
