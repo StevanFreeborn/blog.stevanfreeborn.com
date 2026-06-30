@@ -25,8 +25,12 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
+      - name: Setup PowerShell
+        uses: mchave3/setup-pwsh@v1.0.0
       - name: Install report generator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+        run: |
+          dotnet tool install --tool-path ./.tools dotnet-reportgenerator-globaltool
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
       - name: Restore dependencies
         run: dotnet restore
       - name: Build project
