@@ -48,6 +48,9 @@ jobs:
       - name: Install playwright
         shell: pwsh
         run: ./test/Blog.Tests/bin/Debug/net10.0/playwright.ps1 install
+      - name: Install msedge
+        shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net10.0/playwright.ps1 install msedge
       - name: Test project
         run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal -s ./test/Blog.Tests/ci.runsettings
       - name: Upload test results
