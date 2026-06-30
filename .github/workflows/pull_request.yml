@@ -17,16 +17,27 @@ on:
 jobs:
   run_tests:
     name: Run tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
+      - name: Setup PowerShell (Ubuntu)
+        shell: bash
+        run: |
+          apt-get update
+          apt-get install -y wget apt-transport-https software-properties-common
+          wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+          dpkg -i packages-microsoft-prod.deb
+          apt-get update
+          apt-get install -y powershell
       - name: Install report generator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+        run: |
+          dotnet tool install --tool-path ./.tools dotnet-reportgenerator-globaltool
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
       - name: Restore dependencies
         run: dotnet restore
       - name: Build project
@@ -37,16 +48,19 @@ jobs:
       - name: Install playwright
         shell: pwsh
         run: ./test/Blog.Tests/bin/Debug/net10.0/playwright.ps1 install
+      - name: Install msedge
+        shell: pwsh
+        run: ./test/Blog.Tests/bin/Debug/net10.0/playwright.ps1 install msedge
       - name: Test project
         run: dotnet test -e DOTNET_ENVIRONMENT=CI --no-build --verbosity normal -s ./test/Blog.Tests/ci.runsettings
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: ./test/Blog.Tests/TestResults
       - name: Upload playwright traces
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: playwright-traces
           path: ./test/Blog.Tests/bin/Debug/net10.0/playwright-traces
