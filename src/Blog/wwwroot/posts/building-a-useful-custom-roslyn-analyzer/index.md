@@ -69,6 +69,10 @@ The code fix handles three cases:
 | `GetDataAsync(17, false)`       | `GetDataAsync(17, sync)`       |
 | `GetDataAsync(17, sync: false)` | `GetDataAsync(17, sync: sync)` |
 
+Here is a quick example of what it looks like in action:
+
+<video src="https://share.stevanfreeborn.com/blog.stevanfreeborn.com/building-a-useful-custom-roslyn-analyzer/example.mp4" controls title="Code fix demonstration"></video>
+
 It preserves named arguments, handles out-of-order parameters, and works when sync isn't the last parameter in the target method signature.
 
 In all honesty, implementing the code fix was much more challenging than the analyzer itself. The analyzer is a simple check for a specific pattern, but the code fix has to understand the context of the invocation and how to rewrite it correctly. I had to dig into Roslyn's syntax APIs and learn how to manipulate syntax trees effectively. This was made a lot more difficult by the fact that it seems like Microsoft doesn't have a lot of helpful documentation on the code analysis APIs. I spent a fair amount of time reading through the source code of other analyzers and looking at how they did things. Particularly, the [analyzer](https://github.com/dotnet/sdk/blob/main/src/Microsoft.CodeAnalysis.NetAnalyzers/src/Microsoft.CodeAnalysis.NetAnalyzers/Microsoft.NetCore.Analyzers/Runtime/ForwardCancellationTokenToInvocations.Analyzer.cs) and [code fix](https://github.com/dotnet/sdk/blob/main/src/Microsoft.CodeAnalysis.NetAnalyzers/src/Microsoft.CodeAnalysis.NetAnalyzers/Microsoft.NetCore.Analyzers/Runtime/ForwardCancellationTokenToInvocations.Fixer.cs) that exists for making sure you forward cancellation tokens through async call chains as it was solving a similar problem to what I was trying to solve.
