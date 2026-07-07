@@ -4,7 +4,7 @@
   "lead": "AI tools are constantly generating code, answers, and decisions for us. But what is this constant outsourcing doing to our internal reasoning? A new study on 'Tri-System Theory' highlights the danger of 'cognitive surrender', and why I am determined to keep my own analytical engine running.",
   "isPublished": true,
   "publishedAt": "2026-07-07",
-  "openGraphImage": "posts/i-dont-want-to-be-a-sytems-3-thinker/og-image.png"
+  "openGraphImage": "posts/i-dont-want-to-be-a-systems-3-thinker/og-image.png"
 }
 
 ```
